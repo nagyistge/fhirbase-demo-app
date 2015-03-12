@@ -1,0 +1,23 @@
+<div ng-if="error" class="alert alert-danger">
+  <h4>Error</h4>
+  <pre>{{errorMessage | json}}</pre>
+</div>
+<textarea class="form-control"
+  ng-keypress="enterSql($event)"
+  style="display: block; min-height: 200px;"
+  ng-model="sql">
+</textarea>
+
+<table class="table">
+  <tr>
+    <th ng-repeat="(k,v) in result[0]">
+      {{k}}
+    </th>
+  </tr>
+  <tr ng-repeat="row in result">
+    <td ng-repeat="(k,v) in row">
+      {{v}}
+    </td>
+  </tr>
+</table>
+
