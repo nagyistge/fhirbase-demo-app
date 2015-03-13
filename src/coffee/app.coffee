@@ -35,20 +35,33 @@ activate = (name)->
 app.run ($rootScope, $window, $location, $http)->
 
 app.controller 'IndexController', ($scope, $http)->
+  base_url = 'http://192.168.59.103:8888/'
+  query = (sql)->
+    $http(
+      url: base_url,
+      method: 'GET',
+      params: {sql: sql}
+    )
+
+  query("""SELECT * FROM pg_catalog.pg_tables where schemaname = 'public' 
+            order by tablename;""")
+    .success (data)->
+      $scope.tables = data
+
   $scope.sql = 'SELECT 1'
   $scope.enterSql = (ev)->
-    console.log(ev)
-    if ev.which == 10 and ev.ctrlKey
+    if (ev.which == 10 or ev.which == 13)  and ev.ctrlKey
       $scope.query()
 
   $scope.query = ()->
     $http(
-      url: 'http://172.17.0.12:8888/'
+      url: base_url
       method: 'GET'
       params: {sql: $scope.sql}
     ).success (data)->
       console.log(data)
       $scope.result = data
+      $scope.error = '' if $scope.error
     .error (data)->
       $scope.error = true
       $scope.errorMessage = data

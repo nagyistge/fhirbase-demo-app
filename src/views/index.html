@@ -2,22 +2,35 @@
   <h4>Error</h4>
   <pre>{{errorMessage | json}}</pre>
 </div>
-<textarea class="form-control"
-  ng-keypress="enterSql($event)"
-  style="display: block; min-height: 200px;"
-  ng-model="sql">
-</textarea>
+<div class="row">
+  <div class="col-md-10">
+    <textarea class="form-control"
+      ng-keypress="enterSql($event)"
+      style="display: block; min-height: 200px;"
+      ng-model="sql">
+    </textarea>
+    <table class="table">
+      <tr>
+        <th ng-repeat="(k,v) in result[0]">
+          {{k}}
+        </th>
+      </tr>
+      <tr ng-repeat="row in result">
+        <td ng-repeat="(k,v) in row">
+          {{v}}
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="col-md-2">
+    <div class="well">
+      <table class="table">
+        <tr ng-repeat="item in tables">
+          <td>{{item.tablename}}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
 
-<table class="table">
-  <tr>
-    <th ng-repeat="(k,v) in result[0]">
-      {{k}}
-    </th>
-  </tr>
-  <tr ng-repeat="row in result">
-    <td ng-repeat="(k,v) in row">
-      {{v}}
-    </td>
-  </tr>
-</table>
 
