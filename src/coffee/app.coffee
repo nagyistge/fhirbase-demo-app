@@ -1,8 +1,11 @@
+window.CodeMirror = require('../../bower_components/codemirror/lib/codemirror.js')
 require('../../bower_components/angular/angular.js')
 require('../../bower_components/angular-route/angular-route.js')
 require('../../bower_components/angular-sanitize/angular-sanitize.js')
 require('../../bower_components/angular-animate/angular-animate.js')
 require('../../bower_components/angular-cookies/angular-cookies.js')
+require('../../bower_components/angular-ui-codemirror/ui-codemirror.js')
+require('../../bower_components/codemirror/lib/codemirror.css')
 
 require('file?name=index.html!../index.html')
 require('../less/app.less')
@@ -24,6 +27,12 @@ app.config ($routeProvider) ->
 app.run ($rootScope, $window, $location, $http)->
 
 app.controller 'IndexController', ($scope, $http)->
+
+  $scope.codemirrorOptions = {
+    lineWrapping : true,
+    lineNumbers: true
+  }
+
   base_url = 'http://192.168.59.103:8888/'
   $scope.sql = 'SELECT 1'
 
@@ -82,6 +91,7 @@ app.controller 'IndexController', ($scope, $http)->
     query("""insert into snippets (sql, title) values
               ('#{$scope.sql}', '#{$scope.sql_title}')""")
     .success (data)->
+      $scope.sql_title = ''
       $scope.reloadSidebar()
 
 window.app = app
