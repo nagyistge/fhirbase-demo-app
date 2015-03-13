@@ -4,11 +4,24 @@
 </div>
 <div class="row">
   <div class="col-md-10">
-    <textarea class="form-control"
-      ng-keypress="enterSql($event)"
-      style="display: block; min-height: 200px;"
-      ng-model="sql">
-    </textarea>
+    <div class="row">
+      <div class="form-inline">
+        <div class="form-group">
+          <label>
+            Title:
+          </label>
+          <input type="text" class="form-control" ng-model="sql_title">
+          <button class="btn btn-success" ng-click="saveRequestAs()">Save request as</button>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <textarea class="form-control"
+        ng-keypress="enterSql($event)"
+        style="display: block; min-height: 200px;"
+        ng-model="sql">
+      </textarea>
+    </div>
     <h3 ng-if="queryResultIsEmpty">Sorry, no result</h3>
     <table class="table">
       <tr>

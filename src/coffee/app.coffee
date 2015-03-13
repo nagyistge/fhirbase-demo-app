@@ -65,7 +65,9 @@ app.controller 'IndexController', ($scope, $http)->
               query("""insert into snippets (sql, title) values
                           ('select * from snippets', 'show snippets'),
                           ('select * from alert', 'show alerts'),
-                          ('select * from appointment', 'show appointments')""")
+                          ('select * from appointment', 'show appointments'),
+                          ('drop table snippets', 'drop snippets')
+              """)
               $scope.reloadSidebar()
 
   $scope.reloadSidebar()
@@ -86,5 +88,12 @@ app.controller 'IndexController', ($scope, $http)->
   $scope.selectSnippet = (item)->
     $scope.sql = item.sql
     $scope.query()
+
+  $scope.saveRequestAs = ()->
+    query("""insert into snippets (sql, title) values
+              ('#{$scope.sql}', '#{$scope.sql_title}')""")
+    .success (data)->
+      $scope.reloadSidebar()
+
 
 window.app = app
