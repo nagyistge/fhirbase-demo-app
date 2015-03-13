@@ -41,16 +41,10 @@ app.controller 'IndexController', ($scope, $http)->
       url: base_url,
       method: 'GET',
       params: {sql: sql}
-    )
-
-  query("""create table if not exists snippets (sql text, title text)""")
-    .success ->
-      query("""select count(*) from snippets""").success (data)->
-        if data[0].count == 0
-          query("""insert into snippets (sql, title) values
-                      ('select * from snippets', 'show snippets'),
-                      ('select * from alert', 'show alerts'),
-                      ('select * from appointment', 'show appointments')""")
+    ).success (data)->
+      $scope.queryIsEmpty = data.length < 1 ? true : false
+    .error (data)->
+      console.log "default error", data
 
   $scope.reloadSidebar = ()->
     query("""SELECT * FROM pg_catalog.pg_tables where schemaname = 'public' 
@@ -61,6 +55,17 @@ app.controller 'IndexController', ($scope, $http)->
     query("""SELECT * FROM snippets""")
     .success (data)->
       $scope.snippets = data
+    .error ()->
+      query("create table if not exists snippets (sql text, title text)")
+        .success ->
+          query("""select count(*) from snippets""").success (data)->
+            if data[0].count == 0
+              query("""insert into snippets (sql, title) values
+                          ('select * from snippets', 'show snippets'),
+                          ('select * from alert', 'show alerts'),
+                          ('select * from appointment', 'show appointments')""")
+              $scope.reloadSidebar()
+
   $scope.reloadSidebar()
 
   $scope.sql = 'SELECT 1'

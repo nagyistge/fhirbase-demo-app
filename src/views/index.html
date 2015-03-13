@@ -9,6 +9,7 @@
       style="display: block; min-height: 200px;"
       ng-model="sql">
     </textarea>
+    <h3 ng-if="queryIsEmpty">Sorry, no result</h3>
     <table class="table">
       <tr>
         <th ng-repeat="(k,v) in result[0]">
