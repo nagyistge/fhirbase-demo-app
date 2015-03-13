@@ -5,7 +5,10 @@ require('../../bower_components/angular-sanitize/angular-sanitize.js')
 require('../../bower_components/angular-animate/angular-animate.js')
 require('../../bower_components/angular-cookies/angular-cookies.js')
 require('../../bower_components/angular-ui-codemirror/ui-codemirror.js')
+require('../../bower_components/codemirror/mode/sql/sql.js')
+
 require('../../bower_components/codemirror/lib/codemirror.css')
+require('../../bower_components/codemirror/theme/xq-light.css')
 
 require('file?name=index.html!../index.html')
 require('../less/app.less')
@@ -30,7 +33,9 @@ app.controller 'IndexController', ($scope, $http)->
 
   $scope.codemirrorOptions = {
     lineWrapping : true,
-    lineNumbers: true
+    lineNumbers: true,
+    mode: 'sql',
+    theme: 'xq-light'
   }
 
   base_url = 'http://192.168.59.103:8888/'
@@ -89,7 +94,7 @@ app.controller 'IndexController', ($scope, $http)->
 
   $scope.saveRequestAs = ()->
     query("""insert into snippets (sql, title) values
-              ('#{$scope.sql}', '#{$scope.sql_title}')""")
+              ($$ #{$scope.sql} $$, E'#{$scope.sql_title}')""")
     .success (data)->
       $scope.sql_title = ''
       $scope.reloadSidebar()
