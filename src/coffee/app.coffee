@@ -5,7 +5,6 @@ require('../../bower_components/angular-animate/angular-animate.js')
 require('../../bower_components/angular-cookies/angular-cookies.js')
 
 require('file?name=index.html!../index.html')
-require('file?name=fhir.jsofile?name=fhir.json!../fhir.json')
 require('../less/app.less')
 
 app = require('./module')
@@ -21,16 +20,6 @@ app.config ($routeProvider) ->
       controller: 'IndexController'
   rp.otherwise
     templateUrl: '/views/404.html'
-
-app.config ($httpProvider) ->
-  console.log('here')
-
-activate = (name)->
-  sitemap.main.forEach (x)->
-    if x.name == name
-      x.active = true
-    else
-      delete x.active
 
 app.run ($rootScope, $window, $location, $http)->
 
@@ -94,6 +83,5 @@ app.controller 'IndexController', ($scope, $http)->
               ('#{$scope.sql}', '#{$scope.sql_title}')""")
     .success (data)->
       $scope.reloadSidebar()
-
 
 window.app = app
