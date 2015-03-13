@@ -43,10 +43,25 @@ app.controller 'IndexController', ($scope, $http)->
       params: {sql: sql}
     )
 
-  query("""SELECT * FROM pg_catalog.pg_tables where schemaname = 'public' 
-            order by tablename;""")
+  query("""create table if not exists snippets (sql text, title text)""")
+    .success ->
+      query("""select count(*) from snippets""").success (data)->
+        if data[0].count == 0
+          query("""insert into snippets (sql, title) values
+                      ('select * from snippets', 'show snippets'),
+                      ('select * from alert', 'show alerts'),
+                      ('select * from appointment', 'show appointments')""")
+
+  $scope.reloadSidebar = ()->
+    query("""SELECT * FROM pg_catalog.pg_tables where schemaname = 'public' 
+               order by tablename;""")
     .success (data)->
       $scope.tables = data
+
+    query("""SELECT * FROM snippets""")
+    .success (data)->
+      $scope.snippets = data
+  $scope.reloadSidebar()
 
   $scope.sql = 'SELECT 1'
   $scope.enterSql = (ev)->
@@ -54,18 +69,19 @@ app.controller 'IndexController', ($scope, $http)->
       $scope.query()
 
   $scope.query = ()->
-    $http(
-      url: base_url
-      method: 'GET'
-      params: {sql: $scope.sql}
-    ).success (data)->
-      console.log(data)
+    query($scope.sql).success (data)->
       $scope.result = data
       $scope.error = '' if $scope.error
     .error (data)->
       $scope.error = true
       $scope.errorMessage = data
       console.log('error', data, arguments)
-  $scope.query()
+
+  $scope.selectSnippet = (item)->
+    $scope.sql = item.sql
+    $scope.query()
+
+
+  # $scope.query()
 
 window.app = app

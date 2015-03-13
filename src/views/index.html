@@ -24,13 +24,26 @@
   </div>
   <div class="col-md-2">
     <div class="well">
+      <button class="btn btn-info pull-right" ng-click="reloadSidebar()">Reload</button>
       <table class="table">
-        <tr ng-repeat="item in tables">
-          <td>{{item.tablename}}</td>
-        </tr>
+        <h3>Snippets</h3>
+        <ul class="list-unstyled">
+          <li ng-repeat="item in snippets" ng-click="selectSnippet(item)">
+            {{item.title}}
+          </li>
+        </ul>
       </table>
+      <h3>Tables</h3>
+      <ul class="list-unstyled">
+        <li ng-repeat="item in tables">
+          {{item.tablename}}
+        </li>
+      </ul>
+      <!-- <table class="table"> -->
+      <!--   <tr ng&#45;repeat="item in tables"> -->
+      <!--     <td>{{item.tablename}}</td> -->
+      <!--   </tr> -->
+      <!-- </table> -->
     </div>
   </div>
 </div>
-
-
