@@ -9,7 +9,7 @@
       style="display: block; min-height: 200px;"
       ng-model="sql">
     </textarea>
-    <h3 ng-if="queryIsEmpty">Sorry, no result</h3>
+    <h3 ng-if="queryResultIsEmpty">Sorry, no result</h3>
     <table class="table">
       <tr>
         <th ng-repeat="(k,v) in result[0]">
@@ -25,7 +25,9 @@
   </div>
   <div class="col-md-2">
     <div class="well">
-      <button class="btn btn-info pull-right" ng-click="reloadSidebar()">Reload</button>
+      <!-- <button class="btn btn&#45;info pull&#45;right" ng&#45;click="reloadSidebar()">Reload</button> -->
+      <span class="refresh-btn glyphicon glyphicon-refresh pull-right"
+        ng-click="reloadSidebar()"></span>
       <table class="table">
         <h3>Snippets</h3>
         <ul class="list-unstyled">

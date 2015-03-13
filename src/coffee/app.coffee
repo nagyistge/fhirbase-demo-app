@@ -36,13 +36,15 @@ app.run ($rootScope, $window, $location, $http)->
 
 app.controller 'IndexController', ($scope, $http)->
   base_url = 'http://192.168.59.103:8888/'
+  $scope.sql = 'SELECT 1'
+
   query = (sql)->
     $http(
       url: base_url,
       method: 'GET',
       params: {sql: sql}
     ).success (data)->
-      $scope.queryIsEmpty = data.length < 1 ? true : false
+      $scope.queryResultIsEmpty = data.length < 1 ? true : false
     .error (data)->
       console.log "default error", data
 
@@ -68,7 +70,6 @@ app.controller 'IndexController', ($scope, $http)->
 
   $scope.reloadSidebar()
 
-  $scope.sql = 'SELECT 1'
   $scope.enterSql = (ev)->
     if (ev.which == 10 or ev.which == 13)  and ev.ctrlKey
       $scope.query()
@@ -85,8 +86,5 @@ app.controller 'IndexController', ($scope, $http)->
   $scope.selectSnippet = (item)->
     $scope.sql = item.sql
     $scope.query()
-
-
-  # $scope.query()
 
 window.app = app
