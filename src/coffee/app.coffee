@@ -11,6 +11,7 @@ require('../../bower_components/codemirror/lib/codemirror.css')
 require('../../bower_components/codemirror/theme/xq-light.css')
 
 require('file?name=index.html!../index.html')
+require('file?name=fhir.json!../fhir.json')
 require('../less/app.less')
 
 app = require('./module')
@@ -69,8 +70,7 @@ app.controller 'IndexController', ($scope, $http)->
               query("""insert into snippets (sql, title) values
                           ('select * from snippets', 'show snippets'),
                           ('select * from alert', 'show alerts'),
-                          ('select * from appointment', 'show appointments'),
-                          ('drop table snippets', 'drop snippets')
+                          ('select * from appointment', 'show appointments')
               """)
               $scope.reloadSidebar()
 
