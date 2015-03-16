@@ -86,7 +86,8 @@ app.controller 'IndexController', ($scope, $http)->
       $scope.error = '' if $scope.error
     .error (data)->
       $scope.error = true
-      $scope.errorMessage = data
+      d = data.replace(/\n\n/g, "\n").split("<html>")[0]
+      $scope.errorMessage = d
       console.log('error', data, arguments)
 
   $scope.selectSnippet = (item)->
