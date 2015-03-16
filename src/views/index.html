@@ -5,11 +5,14 @@
 <div class="row">
   <div class="col-md-10">
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-3">
+        <button class="btn btn-success" ng-click="query()">Query</button>
+      </div>
+      <div class="col-md-7">
           <input type="text" class="form-control" placeholder="Title" ng-model="sql_title">
       </div>
-      <div class="col-md-6">
-          <button class="btn btn-success" ng-click="saveRequestAs()">Save request as</button>
+      <div class="col-md-2">
+          <button class="btn btn-success btn-save-request" ng-click="saveRequestAs()">Save request as</button>
       </div>
     </div>
     <br>
@@ -22,7 +25,6 @@
           ng-model="sql">
         </textarea>
         <br>
-        <button class="btn btn-success" ng-click="query()">Query</button>
       </div>
     </div>
     <h3 ng-if="queryResultIsEmpty">Sorry, no result</h3>

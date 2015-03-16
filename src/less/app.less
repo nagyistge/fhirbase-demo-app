@@ -2,25 +2,81 @@
 
 @redy: #e62b1e;
 
-.navbar-brand {
-  .icon {
-    color: @redy;
-  }
+@font-face {
+  font-family: 'LogosFont';
+  src: url('../fonts/LogosFont.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+.icon {
+  display: inline-block;
+  font-family: LogosFont ;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.brand {
-  background: url('../imgs/logo.png');
+.header {
+  padding: 0 45px;
+  margin: 0 auto;
+  color: #444;
+  height: 64px;
+  line-height: 64px;
+
+  border-bottom: 1px solid #ddd;
+
+  a {
+    color: #444;
+
+    &.brand-logo {
+      font-size: 36px;
+      .icon {
+        position: relative;
+        top: -2px;
+      }
+    }
+  }
+  a:hover, a:active {
+    text-decoration: none;
+  }
+  .links {
+    font-size: 16px;
+    float: right;
+
+    a.inst-instructions {
+      margin-right: 30px;
+    }
+    a.inst-instructions:hover {
+      text-decoration: underline;
+    }
+
+    .icon {
+      font-size: 36px;
+      position: relative;
+      top: 5px;
+    }
+
+  }
 }
 
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
   display: none !important;
 }
+
+.navbar.navbar-default {
+  padding-left: 35px;
+  padding-right: 35px;
+}
+
 .navbar-static-top.navbar-default {
   border-bottom-width: 2px;
   border-color: @redy;
   background-color: #f1f1f1;
   .fa { font-size: 19px; }
 }
+
 
 .navbar-default .navbar-nav>.active>a {
   font-weight: bold;
@@ -29,6 +85,10 @@
 .view {
   padding: 20px 50px;
   margin: 0 auto;
+
+  .btn-save-request {
+    width: 100%;
+  }
 
   .refresh-btn {
     cursor: pointer;
@@ -64,60 +124,6 @@
     &.ng-enter-active { opacity: 1; }
   }
 }
-
-.fs-sample {
-  position: relative;
-  margin: 60px 0 60px 0;
-  padding: 30px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  .fstabs{
-    position: absolute;
-    top: -18px;
-    right: 30px;
-  }
-
-  pre:last-child {
-    margin-bottom: 0;
-  }
-
-  pre {
-    font-size: 13px;
-    font-family: monospace;
-    padding: 20px;
-    .important {
-      color: red;
-    }
-  }
-
-  .example-label {
-    opacity: 1;
-  }
-
-  & > h4 {
-    margin: 0;
-    margin-top: -46px;
-    background-color: #fff;
-    padding: 5px;
-  }
-}
-
-// @font-face {
-//   font-family: 'LogosFont';
-//   src: url('../fonts/LogosFont.ttf');
-//   font-weight: normal;
-//   font-style: normal;
-// }
-
-// .icon {
-//   display: inline-block;
-//   font-family: LogosFont ;
-//   font-style: normal;
-//   font-weight: normal;
-//   line-height: 1;
-//   -webkit-font-smoothing: antialiased;
-//   -moz-osx-font-smoothing: grayscale;
-// }
 
 .navbar-default .navbar-nav>li>a {
   color: #666;
