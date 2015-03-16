@@ -38,12 +38,13 @@ app.controller 'IndexController', ($scope, $http)->
     theme: 'xq-light'
   }
 
-  base_url = 'http://192.168.59.103:8888/'
+  # base_url = 'http://192.168.59.103:8888/'
+  baseUrl = BASEURL || "#{window.location.protocol}//#{window.location.host}"
   $scope.sql = 'SELECT 1'
 
   query = (sql)->
     $http(
-      url: base_url,
+      url: baseUrl,
       method: 'GET',
       params: {sql: sql}
     ).success (data)->

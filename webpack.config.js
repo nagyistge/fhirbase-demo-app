@@ -25,14 +25,7 @@ module.exports = {
   plugins: [
     new etx("app.css", {}),
     new webpack.DefinePlugin({
-      BASEURL: JSON.stringify(process.env.BASEURL),
-      OAUTH_RESPONSE_TYPE: JSON.stringify(process.env.OAUTH_RESPONSE_TYPE),
-      OAUTH_AUTHORIZE_URI: JSON.stringify(process.env.OAUTH_AUTHORIZE_URI),
-      OAUTH_ACCESS_TOKEN_URI: JSON.stringify(process.env.OAUTH_ACCESS_TOKEN_URI),
-      OAUTH_REDIRECT_URI: JSON.stringify(process.env.OAUTH_REDIRECT_URI),
-      OAUTH_CLIENT_ID: JSON.stringify(process.env.OAUTH_CLIENT_ID),
-      OAUTH_CLIENT_SECRET: JSON.stringify(process.env.OAUTH_CLIENT_SECRET),
-      OAUTH_SCOPE: JSON.stringify(process.env.OAUTH_SCOPE)
+      BASEURL: JSON.stringify(process.env.BASEURL)
     })
   ],
   resolve: { extensions: ["", ".webpack.js", ".web.js", ".js", ".coffee", ".less"]}
