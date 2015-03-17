@@ -9,6 +9,11 @@ require('../../bower_components/codemirror/mode/sql/sql.js')
 
 require('../../bower_components/codemirror/lib/codemirror.css')
 require('../../bower_components/codemirror/theme/xq-light.css')
+require('../../bower_components/codemirror/addon/hint/show-hint.css')
+require('../../bower_components/codemirror/addon/hint/show-hint.js')
+require('../../bower_components/codemirror/addon/hint/sql-hint.js')
+#hint = require('./sql-hint.js')
+#hint(window.CodeMirror)
 
 require('file?name=index.html!../index.html')
 require('file?name=fhir.json!../fhir.json')
@@ -32,13 +37,20 @@ app.run ($rootScope, $window, $location, $http)->
 
 app.controller 'IndexController', ($scope, $http)->
 
-  $scope.codemirrorOptions = {
+  tables = {
+    "schema":[]
+  }
+
+  $scope.codemirrorOptions =
     lineWrapping : true,
     lineNumbers: true,
     mode: 'sql',
     theme: 'xq-light',
-    viewportMargin: Infinity
-  }
+    extraKeys: {"Ctrl-Space": "autocomplete"},
+    viewportMargin: Infinity,
+    hint: window.CodeMirror.hint.sql,
+    hintOptions:
+      tables: tables
 
   # base_url = 'http://192.168.59.103:8888/'
   baseUrl = BASEURL || "#{window.location.protocol}//#{window.location.host}"
@@ -60,6 +72,7 @@ app.controller 'IndexController', ($scope, $http)->
                order by tablename;""")
     .success (data)->
       $scope.tables = data
+      tables[tbl.tablename] = [] for tbl in data
 
     query("""SELECT * FROM snippets""")
     .success (data)->
