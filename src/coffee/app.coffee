@@ -36,7 +36,8 @@ app.controller 'IndexController', ($scope, $http)->
     lineWrapping : true,
     lineNumbers: true,
     mode: 'sql',
-    theme: 'xq-light'
+    theme: 'xq-light',
+    viewportMargin: Infinity
   }
 
   # base_url = 'http://192.168.59.103:8888/'
@@ -50,11 +51,12 @@ app.controller 'IndexController', ($scope, $http)->
       params: {sql: sql}
     ).success (data)->
       $scope.queryResultIsEmpty = data.length < 1 ? true : false
+      $scope.showResult = true
     .error (data)->
       console.log "default error", data
 
   $scope.reloadSidebar = ()->
-    query("""SELECT * FROM pg_catalog.pg_tables where schemaname = 'public' 
+    query("""SELECT * FROM pg_catalog.pg_tables where schemaname = 'public'
                order by tablename;""")
     .success (data)->
       $scope.tables = data

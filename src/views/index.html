@@ -1,30 +1,48 @@
-<div ng-if="error" class="alert alert-danger error">
-  <pre>{{errorMessage}}</pre>
-</div>
-<div class="row">
-  <div class="col-md-10">
-    <div class="row">
-      <div class="col-md-3">
-        <button class="btn btn-success" ng-click="query()">Query</button>
-      </div>
-      <div class="col-md-7">
-          <input type="text" class="form-control" placeholder="Title" ng-model="sql_title">
-      </div>
-      <div class="col-md-2">
-          <button class="btn btn-success btn-save-request" ng-click="saveRequestAs()">Save request as</button>
-      </div>
+<div class="container-fluid toolbar">
+  <div class="row">
+    <div class="col-md-3">
+      <button class="btn btn-success" ng-click="query()">Query</button>
     </div>
-    <br>
-    <div class="row">
-      <div class="col-md-12">
-        <textarea ui-codemirror="codemirrorOptions"
-          class="form-control"
-          ng-keypress="enterSql($event)"
-          style="display: block; min-height: 200px;"
-          ng-model="sql">
-        </textarea>
-        <br>
-      </div>
+    <div class="col-md-5">
+      <input type="text" class="form-control" placeholder="Title" ng-model="sql_title">
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-success btn-save-request" ng-click="saveRequestAs()">Save request as</button>
+    </div>
+    <div class="col-md-2">
+      <a ng-click="showRighBar=!showRighBar">Snippets</a>
+    </div>
+  </div>
+</div>
+<textarea ui-codemirror="codemirrorOptions"
+  class="form-control"
+  ng-keypress="enterSql($event)"
+  ng-model="sql">
+</textarea>
+<div class="right-bar" ng-class="{open:showRighBar}">
+  <!-- <button class="btn btn&#45;info pull&#45;right" ng&#45;click="reloadSidebar()">Reload</button> -->
+  <span class="refresh-btn glyphicon glyphicon-refresh pull-right"
+    ng-click="reloadSidebar()"></span>
+  <table class="table">
+    <h3>Snippets</h3>
+    <ul class="snippets-list list-unstyled">
+      <li ng-repeat="item in snippets" ng-click="selectSnippet(item)">
+      {{item.title}}
+      </li>
+    </ul>
+  </table>
+  <h3>Tables</h3>
+  <ul class="list-unstyled">
+    <li ng-repeat="item in tables">
+    {{item.tablename}}
+    </li>
+  </ul>
+</div>
+<div class="result" ng-class="{open: showResult}" ng-click="showResult =! showResult">
+  <h3 class="result-header">Result</h3>
+  <div class="result-content">
+    <div ng-if="error" class="alert alert-danger error">
+      <pre>{{errorMessage}}</pre>
     </div>
     <h3 ng-if="queryResultIsEmpty">Sorry, no result</h3>
     <table class="table">
@@ -39,31 +57,5 @@
         </td>
       </tr>
     </table>
-  </div>
-  <div class="col-md-2">
-    <div class="well">
-      <!-- <button class="btn btn&#45;info pull&#45;right" ng&#45;click="reloadSidebar()">Reload</button> -->
-      <span class="refresh-btn glyphicon glyphicon-refresh pull-right"
-        ng-click="reloadSidebar()"></span>
-      <table class="table">
-        <h3>Snippets</h3>
-        <ul class="snippets-list list-unstyled">
-          <li ng-repeat="item in snippets" ng-click="selectSnippet(item)">
-            {{item.title}}
-          </li>
-        </ul>
-      </table>
-      <h3>Tables</h3>
-      <ul class="list-unstyled">
-        <li ng-repeat="item in tables">
-          {{item.tablename}}
-        </li>
-      </ul>
-      <!-- <table class="table"> -->
-      <!--   <tr ng&#45;repeat="item in tables"> -->
-      <!--     <td>{{item.tablename}}</td> -->
-      <!--   </tr> -->
-      <!-- </table> -->
-    </div>
   </div>
 </div>

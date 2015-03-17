@@ -8,6 +8,11 @@
   font-weight: normal;
   font-style: normal;
 }
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  padding-top: 60px;
+}
 .icon {
   display: inline-block;
   font-family: LogosFont ;
@@ -66,15 +71,66 @@
 }
 
 .view {
-  padding: 20px 50px;
-  margin: 0 auto;
-
   .error pre {
     border: none;
     background: transparent;
     margin: 0;
     padding: 0;
     color: darkred;
+  }
+  .toolbar {
+    padding: 5px 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  .right-bar {
+    padding: 10px 15px;
+    position: fixed;
+    bottom: 0;
+    right: 4px;
+    top: 120px;
+    border: 1px solid #ddd;
+    width: 0px;
+    opacity: 0;
+    z-index: 1000;
+    background: white;
+    overflow-y: auto;
+    &.open {
+      opacity: 1;
+      width: 400px;
+    }
+    -webkit-transition: 0.2s ease-out all;
+    transition: 0.2s ease-out all;
+  }
+  .result {
+    position: fixed;
+    bottom: 0;
+    left: 4px;
+    right: 4px;
+    border: 1px solid #ddd;
+    height: 40px;
+    background: white;
+    &.open {
+      height: 600px;
+    }
+    z-index: 1001;
+    -webkit-transition: 0.2s ease-out all;
+    transition: 0.2s ease-out all;
+    box-shadow: 0 -1px 20px 0 rgba(0, 0, 0, 0.16), 0 -1px 25px 0 rgba(0, 0, 0, 0.12);
+    .result-header {
+      margin-top: 0;
+      border-bottom: 1px solid #ddd;
+      padding: 4px 10px;
+      background: white;
+    }
+    .result-content {
+      position: absolute;
+      top: 40px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow: auto;
+      padding: 5px;
+    }
   }
 
   .btn-save-request {
@@ -85,8 +141,10 @@
     cursor: pointer;
   }
 
+  .CodeMirror {
+    height: auto;
+  }
   .CodeMirror-wrap {
-    border: 1px solid #ddd;
   }
 
   .snippets-list {
