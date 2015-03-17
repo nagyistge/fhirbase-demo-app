@@ -54,11 +54,13 @@
     </div>
     <h3 ng-if="queryResultIsEmpty">Sorry, no result</h3>
     <table class="table">
-      <tr>
-        <th ng-repeat="(k,v) in result[0]">
-          {{k}}
-        </th>
-      </tr>
+      <thead>
+        <tr>
+          <th ng-repeat="(k,v) in result[0]">
+            {{k}}
+          </th>
+        </tr>
+      </thead>
       <tr ng-repeat="row in result">
         <td ng-repeat="(k,v) in row">
           {{v}}
