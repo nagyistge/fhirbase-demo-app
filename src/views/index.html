@@ -1,50 +1,53 @@
 <div class="container-fluid toolbar">
-  <div class="row">
-    <div class="col-md-3">
-      <button class="btn btn-success btn-full-width" ng-click="query()">Query</button>
-    </div>
-    <div class="col-md-5">
-      <div class="input-group">
-        <input type="text" class="form-control" placeholder="Title" ng-model="sql_title">
-        <div class="input-group-btn">
-          <button class="btn btn-default" ng-click="saveRequestAs()">Save request as</button>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3 col-md-offset-1 tabs">
-      <a ng-click="showRightBar=!showRightBar">Snippets</a>
-      <a ng-click="showRightBar=!showRightBar">Procedures</a>
-      <a ng-click="showRightBar=!showRightBar">Tables</a>
+  <button class="btn btn-success" style="vertical-align: top;"ng-click="query()">Query &lt;ctrl-enter&gt;</button>
+  <div class="input-group" style="display: inline-block; width: 25em;">
+    <input type="text" class="form-control" style="width:15em;" placeholder="Title" ng-model="sql_title">
+    <div class="input-group-btn">
+      <button class="btn btn-default" ng-click="saveRequestAs()">Save As</button>
     </div>
   </div>
+  <div class="tabs">
+    <a ng-class="{active: (rightPane=='snippets')}" ng-click="trigerState('snippets')">Snippets</a>
+    <a ng-class="{active: (rightPane=='procs')}" ng-click="trigerState('procs')">Procedures</a>
+    <a ng-class="{active: (rightPane=='tables')}" ng-click="trigerState('tables')">Tables</a>
+  </div>
 </div>
+<div style="font-size:10px; color: gray; padding: 7px 10px 2px;"> Hint: use <code>&lt;ctrl-space&gt;</code> for auto-complete</div>
 <textarea ui-codemirror="codemirrorOptions"
   class="form-control"
   ng-keypress="enterSql($event)"
   ng-model="sql">
 </textarea>
-<div class="right-bar" ng-class="{open:showRightBar}">
-  <!-- <button class="btn btn&#45;info pull&#45;right" ng&#45;click="reloadSidebar()">Reload</button> -->
+<div class="right-bar" ng-class="{open:(rightPane=='snippets')}">
   <span class="refresh-btn glyphicon glyphicon-refresh pull-right"
     ng-click="reloadSidebar()"></span>
   <table class="table">
-    <h3>Snippets</h3>
     <ul class="snippets-list list-unstyled">
-      <li ng-repeat="item in snippets" ng-click="selectSnippet(item)">
+      <li class="item" ng-repeat="item in snippets" ng-click="selectSnippet(item)">
       {{item.title}}
       </li>
     </ul>
   </table>
-  <h3>Tables</h3>
+</div>
+<div class="right-bar" ng-class="{open:(rightPane=='tables')}">
   <ul class="list-unstyled">
-    <li ng-repeat="item in tables">
-    {{item.tablename}}
+    <li class="item" ng-repeat="item in tables" ng-click="selectTable(item)">
+    {{item.title}}
+    </li>
+  </ul>
+</div>
+<div class="right-bar" ng-class="{open:(rightPane=='procs')}">
+  <ul class="list-unstyled">
+    <li class="item" ng-repeat="item in procs" ng-click="selectProc(item)">
+    {{item.title}}
     </li>
   </ul>
 </div>
 <div class="result" ng-class="{open: showResult}" ng-click="showResult =! showResult">
-  <span ng-class="{'glyphicon-collapse-up': !showResult, 'glyphicon-collapse-down': showResult}" class="glyphicon icon-collapse"></span>
-  <h3 class="result-header">Result</h3>
+  <h3 class="result-header">
+    result
+    <span ng-class="{'glyphicon-chevron-up': !showResult, 'glyphicon-chevron-down': showResult}" class="glyphicon icon-collapse"></span>
+  </h3>
   <div class="result-content">
     <div ng-if="error" class="alert alert-danger error">
       <pre>{{errorMessage}}</pre>

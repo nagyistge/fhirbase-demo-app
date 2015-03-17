@@ -36,6 +36,32 @@ app.config ($routeProvider) ->
 
 app.run ($rootScope, $window, $location, $http)->
 
+
+SELECT_PROCS = """
+SELECT
+'fhir.' || routine_name || '(' ||
+  coalesce(( select string_agg(x.parameter_name || ' ' || x.data_type, ', ') from
+    information_schema.parameters  x
+    where routines.specific_name=x.specific_name
+  ), '')
+  || ')' as title
+  from information_schema.routines
+  where routine_schema = 'fhir'
+  order by routine_name
+"""
+
+SELECT_TBLS = """
+  SELECT tablename as title
+  FROM pg_catalog.pg_tables where schemaname = 'public'
+  AND tablename not like '%_history'
+  order by tablename;
+"""
+CREATE_SNIPS = """
+ insert into snippets (sql, title) values
+    ('select * from snippets', 'show snippets'),
+    ('select * from alert', 'show alerts'),
+    ('select * from appointment', 'show appointments')
+"""
 app.controller 'IndexController', ($scope, $http)->
   codemirrorExtraKeys = window.CodeMirror.normalizeKeyMap
     "Ctrl-Space": "autocomplete"
@@ -80,11 +106,15 @@ app.controller 'IndexController', ($scope, $http)->
       console.log "default error", data
 
   $scope.reloadSidebar = ()->
-    silentQuery("""SELECT * FROM pg_catalog.pg_tables where schemaname = 'public'
-               order by tablename;""")
+    silentQuery(SELECT_TBLS)
     .success (data)->
       $scope.tables = data
-      tables[tbl.tablename] = [] for tbl in data
+      tables[tbl.title] = [] for tbl in data
+
+    silentQuery(SELECT_PROCS)
+    .success (data)->
+      $scope.procs = data
+      tables[tbl.title] = [] for tbl in data
 
     silentQuery("""SELECT * FROM snippets""")
     .success (data)->
@@ -94,11 +124,7 @@ app.controller 'IndexController', ($scope, $http)->
         .success ->
           silentQuery("""select count(*) from snippets""").success (data)->
             if data[0].count == 0
-              query("""insert into snippets (sql, title) values
-                          ('select * from snippets', 'show snippets'),
-                          ('select * from alert', 'show alerts'),
-                          ('select * from appointment', 'show appointments')
-              """)
+              query(CREATE_SNIPS)
               $scope.reloadSidebar()
 
   $scope.reloadSidebar()
@@ -113,13 +139,26 @@ app.controller 'IndexController', ($scope, $http)->
       $scope.error = '' if $scope.error
     .error (data)->
       $scope.error = true
+      $scope.result = []
       d = data.replace(/\n\n/g, "\n").split("<html>")[0]
       $scope.errorMessage = d
       console.log('error', data, arguments)
 
+  $scope.trigerState = (st)->
+    if $scope.rightPane == st
+      delete $scope.rightPane
+    else
+      $scope.rightPane = st
+
   $scope.selectSnippet = (item)->
     $scope.sql = item.sql
-    $scope.showRightBar = false
+    $scope.query()
+
+  $scope.selectProc = (item)->
+    $scope.sql = "SELECT #{item.title}"
+
+  $scope.selectTable = (item)->
+    $scope.sql = "SELECT * FROM #{item.title} LIMIT 10"
     $scope.query()
 
   $scope.saveRequestAs = ()->

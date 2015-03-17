@@ -11,7 +11,8 @@
 
 body {
   font-family: 'Open Sans', sans-serif;
-  padding-top: 60px;
+  padding-top: 55px;
+  overflow-x: hidden;
 }
 .icon {
   display: inline-block;
@@ -82,27 +83,36 @@ body {
     padding: 5px 10px;
     border-bottom: 1px solid #ddd;
     .tabs {
+      display: inline-block;
+      float: right;
       a {
         display: inline-block;
         height: 34px;
         line-height: 24px;
         margin-right: 10px;
         cursor: pointer;
-        padding: 5px;
-      }
-      a:hover {
-        background: #e7e7e7;
+        padding: 5px 10px;
         border-radius: 5px;
+        float: right;
+        color: inherit;
+        border: 1px solid white;
         text-decoration: none;
+        &.active {
+          border-color: #ddd;
+          background: #e7e7e7;
+        }
+        &:hover {
+          border-color: #ddd;
+          text-decoration: none;
+        }
       }
     }
   }
   .right-bar {
-    padding: 10px 15px;
     position: fixed;
     bottom: 0;
     right: 4px;
-    top: 120px;
+    top: 104px;
     border: 1px solid #ddd;
     width: 0px;
     opacity: 0;
@@ -111,19 +121,24 @@ body {
     overflow-y: auto;
     &.open {
       opacity: 1;
-      width: 400px;
+      width: 500px;
     }
     -webkit-transition: 0.2s ease-out all;
     transition: 0.2s ease-out all;
+    .item {
+      cursor: pointer;
+      padding: 10px 15px;
+      border-bottom: 1px solid #eee;
+      font-family: monospace;
+      &:hover {
+        background-color: #f1f1f1;
+      }
+    }
   }
   .result {
     .icon-collapse {
-      color: #444;
+      color: #666;
       font-size: 18px;
-      position: absolute;
-      right: 4px;
-      top: 8px;
-      cursor: pointer;
     }
     position: fixed;
     bottom: 0;
@@ -143,7 +158,7 @@ body {
       margin-top: 0;
       border-bottom: 1px solid #ddd;
       padding: 4px 10px;
-      background: white;
+      background: #f1f1f1;
     }
     .result-content {
       position: absolute;
@@ -160,24 +175,8 @@ body {
     width: 100%;
   }
 
-  .refresh-btn {
-    cursor: pointer;
-  }
-
-  .CodeMirror {
-    height: auto;
-  }
-  .CodeMirror-wrap {
-  }
-
-  .snippets-list {
-    li {
-      padding: 1px 5px;
-    }
-    li:hover {
-      background-color: #d3d3d3;
-    }
-  }
+  .refresh-btn { cursor: pointer; }
+  .CodeMirror {height: auto; }
   &.ng-enter,
   &.ng-leave {
     -webkit-transition: 455ms cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
