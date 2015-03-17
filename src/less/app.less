@@ -81,6 +81,21 @@ body {
   .toolbar {
     padding: 5px 10px;
     border-bottom: 1px solid #ddd;
+    .tabs {
+      a {
+        display: inline-block;
+        height: 34px;
+        line-height: 24px;
+        margin-right: 10px;
+        cursor: pointer;
+        padding: 5px;
+      }
+      a:hover {
+        background: #e7e7e7;
+        border-radius: 5px;
+        text-decoration: none;
+      }
+    }
   }
   .right-bar {
     padding: 10px 15px;
@@ -102,6 +117,14 @@ body {
     transition: 0.2s ease-out all;
   }
   .result {
+    .icon-collapse {
+      color: #444;
+      font-size: 18px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+      cursor: pointer;
+    }
     position: fixed;
     bottom: 0;
     left: 4px;
@@ -110,12 +133,12 @@ body {
     height: 40px;
     background: white;
     &.open {
-      height: 600px;
+      height: 50%;
     }
     z-index: 1001;
     -webkit-transition: 0.2s ease-out all;
     transition: 0.2s ease-out all;
-    box-shadow: 0 -1px 20px 0 rgba(0, 0, 0, 0.16), 0 -1px 25px 0 rgba(0, 0, 0, 0.12);
+    box-shadow: 0 3px 15px 0 rgba(0, 0, 0, 0.16);
     .result-header {
       margin-top: 0;
       border-bottom: 1px solid #ddd;
@@ -133,7 +156,7 @@ body {
     }
   }
 
-  .btn-save-request {
+  .btn-full-width {
     width: 100%;
   }
 

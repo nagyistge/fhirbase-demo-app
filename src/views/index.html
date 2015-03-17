@@ -1,16 +1,20 @@
 <div class="container-fluid toolbar">
   <div class="row">
     <div class="col-md-3">
-      <button class="btn btn-success" ng-click="query()">Query</button>
+      <button class="btn btn-success btn-full-width" ng-click="query()">Query</button>
     </div>
     <div class="col-md-5">
-      <input type="text" class="form-control" placeholder="Title" ng-model="sql_title">
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="Title" ng-model="sql_title">
+        <div class="input-group-btn">
+          <button class="btn btn-default" ng-click="saveRequestAs()">Save request as</button>
+        </div>
+      </div>
     </div>
-    <div class="col-md-2">
-      <button class="btn btn-success btn-save-request" ng-click="saveRequestAs()">Save request as</button>
-    </div>
-    <div class="col-md-2">
-      <a ng-click="showRighBar=!showRighBar">Snippets</a>
+    <div class="col-md-3 col-md-offset-1 tabs">
+      <a ng-click="showRightBar=!showRightBar">Snippets</a>
+      <a ng-click="showRightBar=!showRightBar">Procedures</a>
+      <a ng-click="showRightBar=!showRightBar">Tables</a>
     </div>
   </div>
 </div>
@@ -19,7 +23,7 @@
   ng-keypress="enterSql($event)"
   ng-model="sql">
 </textarea>
-<div class="right-bar" ng-class="{open:showRighBar}">
+<div class="right-bar" ng-class="{open:showRightBar}">
   <!-- <button class="btn btn&#45;info pull&#45;right" ng&#45;click="reloadSidebar()">Reload</button> -->
   <span class="refresh-btn glyphicon glyphicon-refresh pull-right"
     ng-click="reloadSidebar()"></span>
@@ -39,6 +43,7 @@
   </ul>
 </div>
 <div class="result" ng-class="{open: showResult}" ng-click="showResult =! showResult">
+  <span ng-class="{'glyphicon-collapse-up': !showResult, 'glyphicon-collapse-down': showResult}" class="glyphicon icon-collapse"></span>
   <h3 class="result-header">Result</h3>
   <div class="result-content">
     <div ng-if="error" class="alert alert-danger error">

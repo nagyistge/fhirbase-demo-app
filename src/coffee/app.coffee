@@ -25,6 +25,7 @@ require('./views')
 
 sitemap = require('./sitemap')
 
+
 app.config ($routeProvider) ->
   rp = $routeProvider
     .when '/',
@@ -36,17 +37,18 @@ app.config ($routeProvider) ->
 app.run ($rootScope, $window, $location, $http)->
 
 app.controller 'IndexController', ($scope, $http)->
+  codemirrorExtraKeys = window.CodeMirror.normalizeKeyMap
+    "Ctrl-Space": "autocomplete"
+    "Ctrl-Enter": ()-> $scope.query()
 
-  tables = {
-    "schema":[]
-  }
+  tables = { "schema":[] }
 
   $scope.codemirrorOptions =
     lineWrapping : true,
     lineNumbers: true,
     mode: 'sql',
     theme: 'xq-light',
-    extraKeys: {"Ctrl-Space": "autocomplete"},
+    extraKeys: codemirrorExtraKeys
     viewportMargin: Infinity,
     hint: window.CodeMirror.hint.sql,
     hintOptions:
@@ -67,20 +69,30 @@ app.controller 'IndexController', ($scope, $http)->
     .error (data)->
       console.log "default error", data
 
+  silentQuery = (sql)->
+    $http(
+      url: baseUrl,
+      method: 'GET',
+      params: {sql: sql}
+    ).success (data)->
+      $scope.queryResultIsEmpty = data.length < 1 ? true : false
+    .error (data)->
+      console.log "default error", data
+
   $scope.reloadSidebar = ()->
-    query("""SELECT * FROM pg_catalog.pg_tables where schemaname = 'public'
+    silentQuery("""SELECT * FROM pg_catalog.pg_tables where schemaname = 'public'
                order by tablename;""")
     .success (data)->
       $scope.tables = data
       tables[tbl.tablename] = [] for tbl in data
 
-    query("""SELECT * FROM snippets""")
+    silentQuery("""SELECT * FROM snippets""")
     .success (data)->
       $scope.snippets = data
     .error ()->
-      query("create table if not exists snippets (sql text, title text)")
+      silentQuery("create table if not exists snippets (sql text, title text)")
         .success ->
-          query("""select count(*) from snippets""").success (data)->
+          silentQuery("""select count(*) from snippets""").success (data)->
             if data[0].count == 0
               query("""insert into snippets (sql, title) values
                           ('select * from snippets', 'show snippets'),
@@ -107,6 +119,7 @@ app.controller 'IndexController', ($scope, $http)->
 
   $scope.selectSnippet = (item)->
     $scope.sql = item.sql
+    $scope.showRightBar = false
     $scope.query()
 
   $scope.saveRequestAs = ()->
