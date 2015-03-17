@@ -55,19 +55,29 @@ app.controller 'IndexController', ($scope, $http)->
     .error (data)->
       console.log "default error", data
 
+  silentQuery = (sql)->
+    $http(
+      url: baseUrl,
+      method: 'GET',
+      params: {sql: sql}
+    ).success (data)->
+      $scope.queryResultIsEmpty = data.length < 1 ? true : false
+    .error (data)->
+      console.log "default error", data
+
   $scope.reloadSidebar = ()->
-    query("""SELECT * FROM pg_catalog.pg_tables where schemaname = 'public'
+    silentQuery("""SELECT * FROM pg_catalog.pg_tables where schemaname = 'public'
                order by tablename;""")
     .success (data)->
       $scope.tables = data
 
-    query("""SELECT * FROM snippets""")
+    silentQuery("""SELECT * FROM snippets""")
     .success (data)->
       $scope.snippets = data
     .error ()->
-      query("create table if not exists snippets (sql text, title text)")
+      silentQuery("create table if not exists snippets (sql text, title text)")
         .success ->
-          query("""select count(*) from snippets""").success (data)->
+          silentQuery("""select count(*) from snippets""").success (data)->
             if data[0].count == 0
               query("""insert into snippets (sql, title) values
                           ('select * from snippets', 'show snippets'),

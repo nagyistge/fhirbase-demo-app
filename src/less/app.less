@@ -81,6 +81,13 @@ body {
   .toolbar {
     padding: 5px 10px;
     border-bottom: 1px solid #ddd;
+    .tabs {
+      a {
+        height: 34px;
+        line-height: 34px;
+        margin-right: 10px;
+      }
+    }
   }
   .right-bar {
     padding: 10px 15px;
@@ -110,12 +117,12 @@ body {
     height: 40px;
     background: white;
     &.open {
-      height: 600px;
+      height: 50%;
     }
     z-index: 1001;
     -webkit-transition: 0.2s ease-out all;
     transition: 0.2s ease-out all;
-    box-shadow: 0 -1px 20px 0 rgba(0, 0, 0, 0.16), 0 -1px 25px 0 rgba(0, 0, 0, 0.12);
+    box-shadow: 0 3px 15px 0 rgba(0, 0, 0, 0.16);
     .result-header {
       margin-top: 0;
       border-bottom: 1px solid #ddd;
@@ -133,7 +140,7 @@ body {
     }
   }
 
-  .btn-save-request {
+  .btn-full-width {
     width: 100%;
   }
 

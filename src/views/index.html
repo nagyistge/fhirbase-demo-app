@@ -1,16 +1,22 @@
 <div class="container-fluid toolbar">
   <div class="row">
     <div class="col-md-3">
-      <button class="btn btn-success" ng-click="query()">Query</button>
+      <button class="btn btn-success btn-full-width" ng-click="query()">Query</button>
     </div>
     <div class="col-md-5">
-      <input type="text" class="form-control" placeholder="Title" ng-model="sql_title">
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="Title" ng-model="sql_title">
+        <div class="input-group-btn">
+          <button class="btn btn-default" ng-click="saveRequestAs()">Save request as</button>
+        </div>
+      </div>
     </div>
     <div class="col-md-2">
-      <button class="btn btn-success btn-save-request" ng-click="saveRequestAs()">Save request as</button>
     </div>
-    <div class="col-md-2">
+    <div class="col-md-2 tabs">
       <a ng-click="showRighBar=!showRighBar">Snippets</a>
+      <a ng-click="showRighBar=!showRighBar">Procedures</a>
+      <a ng-click="showRighBar=!showRighBar">Tables</a>
     </div>
   </div>
 </div>
