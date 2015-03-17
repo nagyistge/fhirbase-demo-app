@@ -12,9 +12,9 @@
 <link rel="stylesheet" href="app.css" />
 </head>
 <body>
-<!-- Static navbar -->
-<nav class="navbar navbar-default navbar-fixed-top">
+<nav class="navbar navbar-default">
   <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
         <span class="sr-only">Toggle navigation</span>
@@ -22,29 +22,21 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">
-        <span class="icon fhirbase-icon">&#x4C;</span>
-        FHIRbase
-      </a>
+      <a class="navbar-brand" href="http://fhirbase.github.io/"><span class="icon">L</span> FHIRbase</a>
     </div>
 
+    <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" aria-expanded="false">
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="index.html">Overview</a></li>
-      </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li class="active"><a href="index.html">Overview</a></li>
-        <li><a href="">Demo</a></li>
-        <li><a href="gstarted.html">Getting Started</a></li>
-        <li>
-        <a href="http://health-samurai.io">coded by
-          <span class="icon samurai-icon">&#x53;</span>
-        </a>
-        </li>
+        <li><a href="http://fhirbase.github.io/index.html">Overview</a></li>
+        <li class="active"><a href="http://hostel.coreos.health-samurai.io:10001/fhirbase-demo/index.html">Demo</a></li>
+        <li><a href="http://fhirbase.github.io/gstarted.html">Getting Started</a></li>
+        <li><a href="http://fhirbase.github.io/docs.html">Docs</a></li>
       </ul>
-    </div>
-  </div>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
 </nav>
+<!-- Static navbar -->
 <div class="view" ng-view>
 </div>
 
