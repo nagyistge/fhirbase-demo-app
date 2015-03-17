@@ -158,7 +158,7 @@ app.controller 'IndexController', ($scope, $http)->
     $scope.sql = "SELECT #{item.title}"
 
   $scope.selectTable = (item)->
-    $scope.sql = "SELECT * FROM #{item.title} LIMIT 10"
+    $scope.sql = "SELECT * FROM \"#{item.title}\" LIMIT 10"
     $scope.query()
 
   $scope.saveRequestAs = ()->
