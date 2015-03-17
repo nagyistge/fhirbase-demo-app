@@ -20,6 +20,7 @@ require('./views')
 
 sitemap = require('./sitemap')
 
+
 app.config ($routeProvider) ->
   rp = $routeProvider
     .when '/',
@@ -31,13 +32,18 @@ app.config ($routeProvider) ->
 app.run ($rootScope, $window, $location, $http)->
 
 app.controller 'IndexController', ($scope, $http)->
+  codemirrorExtraKeys = window.CodeMirror.normalizeKeyMap({
+    "Ctrl-Enter": ()->
+      $scope.query()
+    })
 
   $scope.codemirrorOptions = {
     lineWrapping : true,
     lineNumbers: true,
     mode: 'sql',
     theme: 'xq-light',
-    viewportMargin: Infinity
+    viewportMargin: Infinity,
+    extraKeys: codemirrorExtraKeys
   }
 
   # base_url = 'http://192.168.59.103:8888/'
