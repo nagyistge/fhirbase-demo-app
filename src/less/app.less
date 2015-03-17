@@ -83,9 +83,17 @@ body {
     border-bottom: 1px solid #ddd;
     .tabs {
       a {
+        display: inline-block;
         height: 34px;
-        line-height: 34px;
+        line-height: 24px;
         margin-right: 10px;
+        cursor: pointer;
+        padding: 5px;
+      }
+      a:hover {
+        background: #e7e7e7;
+        border-radius: 5px;
+        text-decoration: none;
       }
     }
   }
@@ -109,6 +117,14 @@ body {
     transition: 0.2s ease-out all;
   }
   .result {
+    .icon-collapse {
+      color: #444;
+      font-size: 18px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+      cursor: pointer;
+    }
     position: fixed;
     bottom: 0;
     left: 4px;

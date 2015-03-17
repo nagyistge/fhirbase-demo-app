@@ -104,6 +104,7 @@ app.controller 'IndexController', ($scope, $http)->
 
   $scope.selectSnippet = (item)->
     $scope.sql = item.sql
+    $scope.showRightBar = false
     $scope.query()
 
   $scope.saveRequestAs = ()->
