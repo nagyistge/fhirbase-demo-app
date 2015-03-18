@@ -94,6 +94,7 @@ app.controller 'IndexController', ($scope, $http)->
       $scope.queryResultIsEmpty = data.length < 1 ? true : false
       $scope.showResult = true
     .error (data)->
+      $scope.showResult = true
       console.log "default error", data
 
   silentQuery = (sql)->
