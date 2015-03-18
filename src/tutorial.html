@@ -29,7 +29,8 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" aria-expanded="false">
       <ul class="nav navbar-nav navbar-right">
         <li><a href="http://fhirbase.github.io/index.html">Overview</a></li>
-        <li class="active"><a href="http://hostel.coreos.health-samurai.io:10001/fhirbase-demo/index.html">Demo</a></li>
+        <li><a href="/index.html">Demo</a></li>
+        <li class="active"><a href="/tutorial.html">Tutorial</a></li>
         <li><a href="http://fhirbase.github.io/gstarted.html">Getting Started</a></li>
         <li><a href="http://fhirbase.github.io/docs.html">Docs</a></li>
       </ul>
@@ -37,54 +38,8 @@
   </div><!-- /.container-fluid -->
 </nav>
 <!-- Static navbar -->
-<div class="container">
-  <h1> Tutorial</h1>
-  <h3>Passing JSON to a SP</h3>
-  <p> When SP's argument has type jsonb, that means you have to pass some JSON as a value. To do this, you need to represent JSON as single-line PostgreSQL string. You can do this in many ways, for example, using a online JSON formatter. Copy-paste your JSON into this tool, cick "Remove white space" button and copy-paste result back to editor.</p>
-  <p>Another thing we need to do before using JSON in SQL query is quote escaping. Strings in PostgreSQL are enclosed in single quotes. Example:</p>
-  <textarea ui-codemirror="codemirrorOptions"
-    class="outline" ng-model="steps.step1">
-  </textarea>
-  <button class="btn btn-success" ng-click="query(steps.step1)">Run</button>
-  <h3>Passing JSON to a SP</h3>
-  <p> When SP's argument has type jsonb, that means you have to pass some JSON as a value. To do this, you need to represent JSON as single-line PostgreSQL string. You can do this in many ways, for example, using a online JSON formatter. Copy-paste your JSON into this tool, cick "Remove white space" button and copy-paste result back to editor.</p>
-  <p>Another thing we need to do before using JSON in SQL query is quote escaping. Strings in PostgreSQL are enclosed in single quotes. Example:</p>
-  <textarea ui-codemirror="codemirrorOptions"
-    class="outline" ng-model="steps.step1">
-  </textarea>
-  <button class="btn btn-success" ng-click="query(steps.step1)">Run</button>
-  <h3>Passing JSON to a SP</h3>
-  <p> When SP's argument has type jsonb, that means you have to pass some JSON as a value. To do this, you need to represent JSON as single-line PostgreSQL string. You can do this in many ways, for example, using a online JSON formatter. Copy-paste your JSON into this tool, cick "Remove white space" button and copy-paste result back to editor.</p>
-  <p>Another thing we need to do before using JSON in SQL query is quote escaping. Strings in PostgreSQL are enclosed in single quotes. Example:</p>
-  <textarea ui-codemirror="codemirrorOptions"
-    class="outline" ng-model="steps.step1">
-  </textarea>
-  <button class="btn btn-success" ng-click="query(steps.step1)">Run</button>
-  <h3>Passing JSON to a SP</h3>
-  <p> When SP's argument has type jsonb, that means you have to pass some JSON as a value. To do this, you need to represent JSON as single-line PostgreSQL string. You can do this in many ways, for example, using a online JSON formatter. Copy-paste your JSON into this tool, cick "Remove white space" button and copy-paste result back to editor.</p>
-  <p>Another thing we need to do before using JSON in SQL query is quote escaping. Strings in PostgreSQL are enclosed in single quotes. Example:</p>
-  <textarea ui-codemirror="codemirrorOptions"
-    class="outline" ng-model="steps.step1">
-  </textarea>
-  <button class="btn btn-success" ng-click="query(steps.step1)">Run</button>
-  <h3>Passing JSON to a SP</h3>
-  <p> When SP's argument has type jsonb, that means you have to pass some JSON as a value. To do this, you need to represent JSON as single-line PostgreSQL string. You can do this in many ways, for example, using a online JSON formatter. Copy-paste your JSON into this tool, cick "Remove white space" button and copy-paste result back to editor.</p>
-  <p>Another thing we need to do before using JSON in SQL query is quote escaping. Strings in PostgreSQL are enclosed in single quotes. Example:</p>
-  <div class="outline">
-    <textarea ui-codemirror="codemirrorOptions"
-      class="outline" ng-model="steps.step1">
-    </textarea>
-  </div>
-  <button class="btn btn-success" ng-click="query(steps.step1)">Run</button>
-  <h3>Passing JSON to a SP</h3>
-  <p> When SP's argument has type jsonb, that means you have to pass some JSON as a value. To do this, you need to represent JSON as single-line PostgreSQL string. You can do this in many ways, for example, using a online JSON formatter. Copy-paste your JSON into this tool, cick "Remove white space" button and copy-paste result back to editor.</p>
-  <p>Another thing we need to do before using JSON in SQL query is quote escaping. Strings in PostgreSQL are enclosed in single quotes. Example:</p>
-  <div class="outline">
-    <textarea ui-codemirror="codemirrorOptions"
-      class="outline" ng-model="steps.step1">
-    </textarea>
-  </div>
-  <button class="btn btn-success" ng-click="query(steps.step1)">Run</button>
+<div class="view">
+  <div class="container" ng-view></div>
 </div>
 
 <div class="result" ng-class="{open: showResult}">

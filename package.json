@@ -13,6 +13,7 @@
     "file-loader": "latest",
     "ng-cache-loader": "latest",
     "style-loader": "latest",
+    "markdown-loader":"latest",
     "webpack": "latest",
     "extract-text-webpack-plugin": "latest",
     "webpack-dev-server": "latest"

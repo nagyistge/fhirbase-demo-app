@@ -22,7 +22,35 @@ app = require('./module')
 
 require('./views')
 
-sitemap = require('./sitemap')
+test = require('../views/test.md')
+
+app.config ['$routeProvider', ($routeProvider) ->
+  $routeProvider
+    .when '/',
+      template: test
+    .otherwise
+      templateUrl: '/views/404.html'
+]
+
+_nextId = 0
+nextId = ()->
+  _nextId++
+
+app.directive 'pre', ()->
+  restrict: 'E'
+  replace: true
+  template: (el)->
+    sql = el.find('code').text()
+    modelId = "sql#{nextId()}"
+    result = """<div>
+      <textarea ui-codemirror="codemirrorOptions"
+      class="outline" ng-model="#{modelId}"
+      ng-init='#{modelId}=#{JSON.stringify(sql).replace(/'/g, "&#39;")}'>
+      </textarea>
+      <button class="btn btn-success btn-run" ng-click="query(#{modelId})">Run</button>
+      </div>
+    """
+    result
 
 app.run ($rootScope, $window, $location, $http)->
   baseUrl = BASEURL || "#{window.location.protocol}//#{window.location.host}"
