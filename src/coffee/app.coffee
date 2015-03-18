@@ -8,6 +8,7 @@ require('../../bower_components/angular-ui-codemirror/ui-codemirror.js')
 require('../../bower_components/codemirror/mode/sql/sql.js')
 
 require('../../bower_components/codemirror/lib/codemirror.css')
+require('../../bower_components/codemirror/theme/tomorrow-night-eighties.css')
 require('../../bower_components/codemirror/theme/xq-light.css')
 require('../../bower_components/codemirror/addon/hint/show-hint.css')
 require('../../bower_components/codemirror/addon/hint/show-hint.js')

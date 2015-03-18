@@ -95,136 +95,137 @@ nav a{
   display: none !important;
 }
 
-.view {
-  .error pre {
-    border: none;
-    background: transparent;
-    margin: 0;
-    padding: 0;
-    color: darkred;
-  }
-  .toolbar {
-    padding: 5px 10px;
-    border-bottom: 1px solid #ddd;
-    background: #fafafa !important;
-    .tabs {
+.error pre {
+  border: none;
+  background: transparent;
+  margin: 0;
+  padding: 0;
+  color: darkred;
+}
+.toolbar {
+  padding: 5px 10px;
+  border-bottom: 1px solid #ddd;
+  background: #fafafa !important;
+  .tabs {
+    display: inline-block;
+    float: right;
+    a {
       display: inline-block;
-      float: right;
-      a {
-        display: inline-block;
-        height: 34px;
-        line-height: 24px;
-        margin-right: 10px;
-        cursor: pointer;
-        padding: 5px 10px;
-        border-radius: 5px;
-        float: right;
-        color: inherit;
-        border: 1px solid transparent;
-        text-decoration: none;
-        &.active {
-          border-color: #aaa;
-          background: #fff;
-        }
-        &:hover {
-          border-color: #ddd;
-          text-decoration: none;
-        }
-      }
-    }
-  }
-  .right-bar {
-    position: fixed;
-    bottom: 0;
-    right: 4px;
-    top: 129px;
-    border: 1px solid #ddd;
-    width: 0px;
-    opacity: 0;
-    z-index: 1000;
-    background: white;
-    overflow-y: auto;
-    &.open {
-      opacity: 1;
-      width: 500px;
-    }
-    -webkit-transition: 0.2s ease-out all;
-    transition: 0.2s ease-out all;
-    .item {
+      height: 34px;
+      line-height: 24px;
+      margin-right: 10px;
       cursor: pointer;
-      padding: 10px 15px;
-      border-bottom: 1px solid #eee;
-      font-family: monospace;
+      padding: 5px 10px;
+      border-radius: 5px;
+      float: right;
+      color: inherit;
+      border: 1px solid transparent;
+      text-decoration: none;
+      &.active {
+        border-color: #aaa;
+        background: #fff;
+      }
       &:hover {
-        background-color: #f1f1f1;
+        border-color: #ddd;
+        text-decoration: none;
       }
     }
   }
-  .result {
-    .icon-collapse {
-      color: #666;
-      font-size: 18px;
-    }
-    position: fixed;
-    bottom: 0;
-    left: 4px;
-    right: 4px;
-    border: 1px solid #ddd;
-    height: 40px;
-    background: white;
-    &.open {
-      height: 50%;
-    }
-    z-index: 1001;
-    -webkit-transition: 0.2s ease-out all;
-    transition: 0.2s ease-out all;
-    box-shadow: 0 3px 15px 0 rgba(0, 0, 0, 0.16);
-    .result-header {
-      margin-top: 0;
-      border-bottom: 1px solid #ddd;
-      padding: 4px 10px;
-      background: #f1f1f1;
-    }
-    .result-content {
-      position: absolute;
-      top: 40px;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      overflow: auto;
-      padding: 10px 20px;
-    }
+}
+.right-bar {
+  position: fixed;
+  bottom: 0;
+  right: 4px;
+  top: 129px;
+  border: 1px solid #ddd;
+  width: 0px;
+  opacity: 0;
+  z-index: 1000;
+  background: white;
+  overflow-y: auto;
+  &.open {
+    opacity: 1;
+    width: 500px;
   }
-
-  .btn-full-width {
-    width: 100%;
-  }
-
-  .refresh-btn {
+  -webkit-transition: 0.2s ease-out all;
+  transition: 0.2s ease-out all;
+  .item {
     cursor: pointer;
-    background: white;
-    padding: 5px;
-    border: 1px solid #ddd;
-    right: 4px;
-    top: 4px;
-  }
-  .CodeMirror {height: auto; }
-  &.ng-enter,
-  &.ng-leave {
-    -webkit-transition: 455ms cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
-    -moz-transition: 455ms cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
-    -ms-transition: 455ms cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
-    -o-transition: 455ms cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
-    transition: 1000ms cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
-    &.ng-leave-active {
-      display: none;
+    padding: 10px 15px;
+    border-bottom: 1px solid #eee;
+    font-family: monospace;
+    &:hover {
+      background-color: #f1f1f1;
     }
   }
-
-  &.ng-enter {
-    opacity: 0.1;
-    position: relative;
-    &.ng-enter-active { opacity: 1; }
+}
+.result {
+  .icon-collapse {
+    color: #666;
+    font-size: 18px;
   }
+  position: fixed;
+  bottom: 0;
+  left: 4px;
+  right: 4px;
+  border: 1px solid #ddd;
+  height: 40px;
+  background: white;
+  &.open {
+    height: 50%;
+  }
+  z-index: 1001;
+  -webkit-transition: 0.2s ease-out all;
+  transition: 0.2s ease-out all;
+  box-shadow: 0 3px 15px 0 rgba(0, 0, 0, 0.16);
+  .result-header {
+    margin-top: 0;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+    padding: 4px 10px;
+    background: #f1f1f1;
+  }
+  .result-content {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: auto;
+    padding: 10px 20px;
+  }
+}
+
+.btn-full-width {
+  width: 100%;
+}
+
+.refresh-btn {
+  cursor: pointer;
+  background: white;
+  padding: 5px;
+  border: 1px solid #ddd;
+  right: 4px;
+  top: 4px;
+}
+.CodeMirror {height: auto; padding: 5px; border-radius: 4px;}
+.outline { border: 1px solid #ddd; margin-bottom: 10px;}
+
+&.ng-enter,
+&.ng-leave {
+  -webkit-transition: 455ms cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
+  -moz-transition: 455ms cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
+  -ms-transition: 455ms cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
+  -o-transition: 455ms cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
+  transition: 1000ms cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
+  &.ng-leave-active {
+    display: none;
+  }
+}
+
+&.ng-enter {
+  opacity: 0.1;
+  position: relative;
+  &.ng-enter-active { opacity: 1; }
 }
 

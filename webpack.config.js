@@ -3,10 +3,13 @@ var webpack = require("webpack");
 
 module.exports = {
   context: __dirname + "/src",
-  entry: "./coffee/app.coffee",
+  entry: {
+    app: "./coffee/app.coffee",
+    tutor: "./coffee/tutor.coffee"
+  },
   output: {
     path: __dirname + "/dist",
-    filename: "app.js"
+    filename: "[name].js"
   },
   module: {
     loaders: [
@@ -28,5 +31,5 @@ module.exports = {
       BASEURL: JSON.stringify(process.env.BASEURL)
     })
   ],
-  resolve: { extensions: ["", ".webpack.js", ".web.js", ".js", ".coffee", ".less"]}
+  resolve: { extensions: ["", ".webpack.js", ".web.js", ".js", ".coffee", ".less", ".html"]}
 };
