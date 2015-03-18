@@ -22,12 +22,10 @@ app = require('./module')
 
 require('./views')
 
-test = require('../views/test.md')
-
 app.config ['$routeProvider', ($routeProvider) ->
   $routeProvider
     .when '/',
-      template: test
+      template: require('../views/tutor.md')
     .otherwise
       templateUrl: '/views/404.html'
 ]
@@ -83,6 +81,7 @@ app.run ($rootScope, $window, $location, $http)->
       $rootScope.error = '' if $rootScope.error
     .error (data)->
       $rootScope.error = true
+      $rootScope.showResult = true
       $rootScope.result = []
       d = data.replace(/\n\n/g, "\n").split("<html>")[0]
       $rootScope.errorMessage = d

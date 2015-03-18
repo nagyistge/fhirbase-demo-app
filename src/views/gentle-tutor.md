@@ -43,10 +43,7 @@ SQL has strict type checking, so SP's arguments and return values are
 typed. When describing SP, we will put type of every argument in
 parens. For example, if argument `cfg` has `jsonb` type, we'll write:
 
-<dl>
-<dt>cfg (jsonb)</dt>
-<dd>Confguration data</dd>
-</dl>
+* cfg::jsonb - Confguration data
 
 You can take a look at
 [overview of standard PostgreSQL types](http://www.postgresql.org/docs/9.4/static/datatype.html#DATATYPE-TABLE).
@@ -58,9 +55,7 @@ FHIR standard
 use two formats for data exchange: XML and JSON. They are
 interchangeable, what means any XML representation of FHIR resource
 can be unambiguously transformed into equivalent JSON
-representation. FHIRBase team
-[has released a XSL 2.0 stylesheet](https://github.com/fhirbase/fhir-xml2json)
-for such purpose.
+representation.
 
 Considering interchangeability of XML and JSON FHIRBase team decided
 to discard XML format support and use JSON as only format. There are
@@ -110,17 +105,11 @@ SELECT '{"foo": "i''m a string from JSON"}'::jsonb;
 Right after installation FHIRBase is "empty", it doesn't have any data
 we can operate with. So let's create some resources first.
 
-Resources are created with **fhir_create** SP which takes four
+Resources are created with **fhir.create** SP which takes four
 arguments:
 
-<dl>
-<dt>resource_content (jsonb)</dt>
-<dd>Content of resource being created</dd>
-</dl>
-
-**Returns (jsonb):**
-[Bundle](http://www.hl7.org/implement/standards/fhir/extras.html#bundle)
-containing newly created Resource.
+* resource:jsonb - Content of resource being created
+* *returns* jsonb - newly created resource
 
 Following query will create a
 [Patient resource](http://www.hl7.org/implement/standards/fhir/patient.html)
@@ -130,7 +119,7 @@ without any tags:
 
 ```sql
 SELECT fhir.create(
-  '{"resourceType":"Patient","identifier":[{"use":"usual","label":"MRN","system":"urn:oid:1.2.36.146.595.217.0.1","value":"12345","period":{"start":"2001-05-06"},"assigner":{"display":"Acme Healthcare"}}],"name":[{"use":"official","family":["Chalmers"],"given":["Peter","James"]},{"use":"usual","given":["Jim"]}],"telecom":[{"use":"home"},{"system":"phone","value":"(03) 5555 6473","use":"work"}],"gender":{"coding":[{"system":"http://hl7.org/fhir/v3/AdministrativeGender","code":"M","display":"Male"}]},"birthDate":"1974-12-25","deceasedBoolean":false,"address":[{"use":"home","line":["534 Erewhon St"],"city":"PleasantVille","state":"Vic","zip":"3999"}],"contact":[{"relationship":[{"coding":[{"system":"http://hl7.org/fhir/patient-contact-relationship","code":"partner"}]}],"name":{"family":["du","Marché"],"_family":[{"extension":[{"url":"http://hl7.org/fhir/Profile/iso-21090#qualifier","valueCode":"VV"}]},null],"given":["Bénédicte"]},"telecom":[{"system":"phone","value":"+33 (237) 998327"}]}],"managingOrganization":{"reference":"Organization/1"},"active":true}'::jsonb,
+  '{"resourceType":"Patient","name":[{"use":"official","family":["Chalmers"],"given":["Peter","James"]},active":true}'::jsonb,
   );
 ```
 
@@ -143,16 +132,11 @@ next step.
 
 To read latest version of Resource use **fhir.read** SP:
 
-<dl>
-<dt>resource_type (varchar)</dt>
-<dd>Type of resource being created, e.g. 'Organization' or 'Patient'</dd>
+* *resource_type* (varchar) - Type of resource being created, e.g. 'Organization' or 'Patient'
+* *url* (jsonb) - Uniform Locator of Resource being read.
 
-<dt>url (jsonb)</dt>
-<dd>Uniform Locator of Resource being read.</dd>
+* RETURNS (jsonb) - Bundle containing found Resource or empty Bundle if no such resource was found.
 
-<dt>RETURNS (jsonb)</dt>
-<dd>Bundle containing found Resource or empty Bundle if no such resource was found.</dd>
-</dl>
 
 Use following code to invoke `fhir.read`, just replace `[URL]` with
 Patient's identifier from previous step:
@@ -200,14 +184,12 @@ logical ID only.
 
 ## Updating resource
 
-To update resource data use **fhir_update** SP:
+To update resource data use **fhir.update** SP:
 
-<dl>
-<dt>new_resource (jsonb)</dt>
-<dd>New resource content.</dd>
-<dt>RETURNS (jsonb)</dt>
-<dd>updated resource</dd>
-</dl>
+
+* new_resource (jsonb) - New resource content.
+* RETURNS (jsonb) - updated resource
+
 
 
 To read latest version of resource use already discussed **fhir.read** SP:
@@ -218,11 +200,11 @@ SELECT fhir.read('Patient', '[logical id]');
 
 TODO: write about meta.versionId
 
-Now let's invoke `fhir_update` with version URL we just received and
+Now let's invoke `fhir.update` with version URL we just received and
 change Patient.text value:
 
 ```sql
-SELECT fhir_update(updated_resource) ;
+SELECT fhir.update(updated_resource) ;
 ```
 
 If meta.versionId in resource you passed to `fhir.update` isn't latest (optimistic locking has failed), you'll receive error message:
@@ -235,51 +217,37 @@ ERROR:  Wrong version_id 43d7c2cf-a1b5-4602-b9a2-ec55d1a2dda8. Current is abb33c
 
 To receive all versions of specific resource use **fhir.history** SP:
 
-<dl>
-<dt>resource_type (varchar)</dt>
-<dd>Type of resource.</dd>
 
-<dt>id (varchar)</dt>
-<dd>URL of resource.</dd>
+* resource_type (varchar) - Type of resource.
 
-<dt>options (jsonb)</dt>
-<dd>Additional options as described in <a href="http://www.hl7.org/implement/standards/fhir/http.html#history">FHIR Standard for <em>history</em> RESTful action</a>. Not implemented for now.</dd>
+* id (varchar) - URL of resource.
 
-<dt>RETURNS (jsonb)</dt>
-<dd>Bundle containing all versions of resource.</dd>
-</dl>
+* options (jsonb) - Additional options as described in <a href="http://www.hl7.org/implement/standards/fhir/http.html#history">FHIR Standard for <em>history</em> RESTful action</a>. Not implemented for now.
 
-Invoking **fhir_history** is quite straightforward:
+* RETURNS (jsonb) - Bundle containing all versions of resource.
+
+
+Invoking **fhir.history** is quite straightforward:
 
 ```sql
-SELECT fhir_history(
-  '{"base": "http://localhost.local"}'::jsonb,
+SELECT fhir.history(
   'Patient',
   '[URL]',
   '{}'::jsonb);
 ```
 
-Also there is a **fhir_vread** SP to read single version of some resource:
+Also there is a **fhir.vread** SP to read single version of some resource:
 
-<dl>
-<dt>cfg (jsonb)</dt>
-<dd>Confguration data</dd>
 
-<dt>resource_type (varchar)</dt>
-<dd>Type of resource.</dd>
+* resource_type (varchar) - Type of resource.
 
-<dt>version_url (varchar)</dt>
-<dd>URL of resource version being read.</dd>
+* version_id (varchar) - resource version being read.
 
-<dt>RETURNS (jsonb)</dt>
-<dd>Bundle containing single version of resource.</dd>
-</dl>
+* RETURNS (jsonb) - resource
+
 
 ```sql
-SELECT fhir_vread(
-  '{"base": "http://localhost.local"}'::jsonb,
-  'Patient',
-  '[version URL]');
+SELECT fhir.vread( 'Patient', 'versionId');
 ```
 
 ## Searching Resources
@@ -298,27 +266,22 @@ Search features:
 We'll demonstrate how to perform simple search and will leave other
 cases for separate article.
 
-Search is performed with **fhir_search** SP:
+Search is performed with **fhir.search** SP:
 
-<dl>
-<dt>cfg (jsonb)</dt>
-<dd>Confguration data</dd>
 
-<dt>resource_type (varchar)</dt>
-<dd>Type of resources you search for.</dd>
+* cfg (jsonb) - Confguration data
 
-<dt>search_parameters (text)</dt>
-<dd>Search parameters in query-string format, as described in <a href="http://www.hl7.org/implement/standards/fhir/search.html#standard">FHIR Standard</a>.</dd>
+* resource_type (varchar) - Type of resources you search for.
 
-<dt>RETURNS (jsonb)</dt>
-<dd>Bundle containing found resources.</dd>
-</dl>
+* search_parameters (text) - Search parameters in query-string format, as described in <a href="http://www.hl7.org/implement/standards/fhir/search.html#standard">FHIR Standard</a>.
+
+* RETURNS (jsonb) - Bundle containing found resources.
+
 
 Let's start with searching for all patients with name containing "Jim":
 
 ```sql
-SELECT fhir_search(
-  '{"base": "http://localhost.local"}'::jsonb,
+SELECT fhir.search(
   'Patient',
   'name=Jim');
 ```
@@ -326,8 +289,7 @@ SELECT fhir_search(
 Search by MRN identifier:
 
 ```sql
-SELECT fhir_search(
-  '{"base": "http://localhost.local"}'::jsonb,
+SELECT fhir.search(
   'Patient',
   'identifier=urn:oid:1.2.36.146.595.217.0.1|12345');
 ```
@@ -335,8 +297,7 @@ SELECT fhir_search(
 Search by gender:
 
 ```sql
-SELECT fhir_search(
-  '{"base": "http://localhost.local"}'::jsonb,
+SELECT fhir.search(
   'Patient',
   'gender=http://hl7.org/fhir/v3/AdministrativeGender|M');
 ```
@@ -344,33 +305,27 @@ SELECT fhir_search(
 Combining several conditions:
 
 ```sql
-SELECT fhir_search(
-  '{"base": "http://localhost.local"}'::jsonb,
+SELECT fhir.search(
   'Patient',
   'gender=http://hl7.org/fhir/v3/AdministrativeGender|M&name=Jim&identifier=urn:oid:1.2.36.146.595.217.0.1|12345');
 ```
 
 ## Deleting resource
 
-To delete resource, use **fhir_delete** SP:
+To delete resource, use **fhir.delete** SP:
 
-<dl>
-<dt>cfg (jsonb)</dt>
-<dd>Confguration data</dd>
 
-<dt>resource_type (varchar)</dt>
-<dd>Type of resources you search for.</dd>
+* cfg (jsonb) - Confguration data
 
-<dt>url (varchar)</dt>
-<dd>URL of resource being deleted.</dd>
+* resource_type (varchar) - Type of resources you search for.
 
-<dt>RETURNS (jsonb)</dt>
-<dd>Bundle containing deleted resource.</dd>
-</dl>
+* url (varchar) - URL of resource being deleted.
+
+* RETURNS (jsonb) - Bundle containing deleted resource.
+
 
 ```sql
-SELECT fhir_delete(
-  '{"base": "http://localhost.local"}'::jsonb,
+SELECT fhir.delete(
   'Patient',
   '[URL]'
 );
@@ -379,9 +334,5 @@ SELECT fhir_delete(
 NB: History of resource is also deleted:
 
 ```sql
-SELECT fhir_history(
-  '{"base": "http://localhost.local"}'::jsonb,
-  'http://localhost.local/Patient/b1f2890a-0536-4742-9d39-90be5d4637ee',
-  '{}'::jsonb
-);
+SELECT fhir.history('http://localhost.local/Patient/b1f2890a-0536-4742-9d39-90be5d4637ee');
 ```

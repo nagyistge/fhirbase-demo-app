@@ -48,9 +48,7 @@
     <span ng-class="{'glyphicon-chevron-up': !showResult, 'glyphicon-chevron-down': showResult}" class="glyphicon icon-collapse"></span>
   </h3>
   <div class="result-content">
-    <div ng-if="error" class="alert alert-danger error">
-      <pre>{{errorMessage}}</pre>
-    </div>
+    <div ng-if="error" class="alert alert-danger error" style="white-space: pre;">{{errorMessage}}</div>
     <h3 ng-if="queryResultIsEmpty">Empty result</h3>
     <table class="table">
       <thead>
@@ -68,6 +66,8 @@
     </table>
   </div>
 </div>
+
+<div style="margin-top: 600px"></div>
 
 <script src="tutor.js"></script>
 </body>
