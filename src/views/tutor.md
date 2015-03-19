@@ -1,4 +1,111 @@
-## FHIRbase: FHIR persistence in PostgreSQL
+# FHIRBase Introduction
+
+We assume that you have successfully
+[installed FHIRBase](http://fhirbase.github.io/installation.html)
+ and already configured connection parameters in your
+PostgreSQL client.  Or you able to follow this tutorial in more
+convinient way and run any code right on this page, cause it is interactive.
+Every time you see `Run` button, you can press it and the results of real
+PostgreSQL query will be shown in the bottom part of a page, inside of "result"
+popup block.
+
+FHIRBase is a PostgreSQL extension for storing and retrieving
+[FHIR resources](http://www.hl7.org/implement/standards/fhir/resources.html). You
+can interact with FHIRBase using any PostgreSQL client. We advise you
+to start with [pgAdmin](http://www.pgadmin.org/), because it has
+easy-to-use graphical interface.  However, 
+[other options](https://wiki.postgresql.org/wiki/Community_Guide_to_PostgreSQL_GUI_Tools)
+are available.
+
+[SQL](https://en.wikipedia.org/wiki/SQL) is the language in which you
+"talk" to FHIRBase. If you don't have at least basic knowledge of SQL,
+we strongly advise to read some books or tutorials on the Web in the
+first place.
+
+
+## Stored Procedures as primary API
+
+In SQL world it's conventional to insert data with `INSERT` statement,
+delete it with `DELETE`, update with `UPDATE` and so on. FHIRBase uses
+less common approach - it forces you to use
+[stored procedures](http://en.wikipedia.org/wiki/Stored_procedure) for
+data manipulation. Reason for this is that FHIRBase needs to perform
+additional actions on data changes in order to keep FHIR-specific
+functionality (such as
+[search](http://www.hl7.org/implement/standards/fhir/search.html) and
+[versioning](http://www.hl7.org/implement/standards/fhir/http.html#vread))
+working.
+
+There are some exceptions from this rule in data retrieval cases. For
+example you can `SELECT ... FROM resource` to search for specific
+resource or set of resources. But when you create, delete or modify
+something, you have to use corresponding stored procedures
+(hereinafter, we'll refer them as SP).
+
+## Types
+
+SQL has strict type checking, so SP's arguments and return values are
+typed. When describing SP, we will put type of every argument after two
+colon(`::`) characters. For example, if argument `cfg` has `jsonb` type, 
+we'll write:
+
+* cfg::jsonb - Confguration data
+
+You can take a look at
+[overview of standard PostgreSQL types](http://www.postgresql.org/docs/9.4/static/datatype.html#DATATYPE-TABLE).
+
+## JSON and XML
+
+FHIR standard
+[allows](http://www.hl7.org/implement/standards/fhir/formats.html) to
+use two formats for data exchange: XML and JSON. They are
+interchangeable, what means any XML representation of FHIR resource
+can be unambiguously transformed into equivalent JSON
+representation.
+
+Considering interchangeability of XML and JSON FHIRBase team decided
+to discard XML format support and use JSON as only format. There are
+several advantages of such decision:
+
+* PostgreSQL has native support for JSON data type which means fast
+  queries and efficient storage;
+* JSON is native and preferred format for Web Services/APIs nowadays;
+* If you need an XML representation of a resource, you can always get
+  it from JSON in your application's code.
+
+## Passing JSON to a Stored Procedure
+
+When SP's argument has type `jsonb`, that means you have to pass some
+JSON as a value. To do this, you need to represent JSON as
+single-line PostgreSQL string. You can do this in many ways, for
+example, using a
+[online JSON formatter](http://jsonviewer.stack.hu/). Copy-paste your
+JSON into this tool, click "Remove white space" button and copy-paste
+result back to editor.
+
+Another thing we need to do before using JSON in SQL query is quote
+escaping. Strings in PostgreSQL are enclosed in single quotes. Example:
+
+```sql
+SELECT 'this is a string';
+```
+
+If you have single quote in your string, you have to **double** it:
+
+```sql
+SELECT 'I''m a string with single quote!';
+```
+
+So if your JSON contains single quotes, Find and Replace them with two
+single quotes in any text editor.
+
+Finally, get your JSON, surround it with single quotes, and append
+`::jsonb` after closing quote. That's how you pass JSON to PostgreSQL.
+
+```sql
+SELECT '{"foo": "i''m a string from JSON"}'::jsonb;
+```
+# FHIRbase: FHIR persistence in PostgreSQL
 
 FHIR is a specification of semantic resources and API for working with healthcare data.
 Please address the [official specification](http://hl7-fhir.github.io/) for more details.
@@ -11,28 +118,29 @@ storage implementation - [FHIRbase](https://github.com/fhirbase/fhirbase).
 
 ## Overview
 
-*FHIRbase* is built on top of PostgreSQL and requires its version higher than 9.4
+**FHIRbase** is built on top of PostgreSQL and requires its version higher than 9.4
 (i.e. [jsonb](http://www.postgresql.org/docs/9.4/static/datatype-json.html) support).
 
 FHIR describes ~100 [resources](http://hl7-fhir.github.io/resourcelist.html)
 as base StructureDefinitions which by themselves are resources in FHIR terms.
 
-To setup FHIRbase use [Installation Guide](installation.md).
-
 FHIRbase stores each resource in two tables - one for current version
 and second for previous versions of the resource. Following a convention, tables are named
-in a lower case after resource types: Patient => patient, StructureDefinition => structuredefinition.
+in a lower case after resource types: `Patient => patient`,
+`StructureDefinition => structuredefinition`.
 
-For example *Patient* resources are stored
-in *patient* and *patient_history* tables:
+For example **Patient** resources are stored
+in `patient` and `patient_history` tables:
 
 ```sql
+-- show Patient table schema
 select column_name, data_type
 from information_schema.columns where
 table_name='patient';
 ```
 
 ```sql
+-- show Patient history table schema
 select column_name, data_type
 from information_schema.columns where
 table_name='patient_history';
