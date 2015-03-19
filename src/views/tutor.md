@@ -105,6 +105,19 @@ Finally, get your JSON, surround it with single quotes, and append
 ```sql
 SELECT '{"foo": "i''m a string from JSON"}'::jsonb;
 ```
+
+Sometimes you can omit `::jsonb` suffix and PostreSQL will parse it
+automaticly, if your JSON representation is valid:
+
+```sql
+SELECT '{"foo": "i''m a string from JSON"}';
+```
+
+```sql
+-- compare two JSONs, one of which built with ::jsonb
+-- should return true
+SELECT '{"foo": "bar"}'::jsonb @> '{"foo": "bar"}';
+```
 # FHIRbase: FHIR persistence in PostgreSQL
 
 FHIR is a specification of semantic resources and API for working with healthcare data.
@@ -146,7 +159,7 @@ from information_schema.columns where
 table_name='patient_history';
 ```
 
-All resource tables have similar structure and are inherited from *resource* table,
+All resource tables have similar structure and are inherited from `resource` table,
 to allow cross-table queries (for more information see [PostgreSQL inheritance](http://www.postgresql.org/docs/9.4/static/tutorial-inheritance.html)).
 
 Minimal installation of FHIRbase consists of only a
@@ -160,10 +173,10 @@ few tables for "meta" resources:
 
 These tables are populated with resources provided by FHIR distribution.
 
-Most of API for FHIRbase is represented as functions in *fhir* schema,
+Most of API for FHIRbase is represented as functions in `fhir` schema,
 other schemas are used as code library modules.
 
-First helpful function is `fhir.generate_tables(resources text[])` which generates tables
+First helpful function is `fhir.generate_tables(resources::text[])` which generates tables
 for specific resources passed as array.
 For example to generate tables for patient, organization and encounter:
 
@@ -171,8 +184,8 @@ For example to generate tables for patient, organization and encounter:
 select fhir.generate_tables('{Patient, Organization, Encounter}');
 ```
 
-If you call generate_tables() without any parameters,
-then tables for all resources described in StructureDefinition
+If you call `generate_tables()` without any parameters,
+then tables for all resources described in `StructureDefinition`
 will be generated:
 
 ```sql
@@ -180,19 +193,22 @@ select fhir.generate_tables();
 ```
 
 When concrete resource type tables are generated,
-column *installed* for this resource is set to true in the profile table.
+column `installed` for this resource is set to true in the profile table.
 
 ```sql
+-- show column 'installed' for Patient table
 SELECT logical_id, installed from structuredefinition
 WHERE logical_id = 'Patient'
 ```
 
-Functions representing public API of FHIRbase are all located in the FHIR schema.
+## Public API functions
+
+Functions representing public API of FHIRbase are all located in the `fhir` schema.
 The first group of functions implements CRUD operations on resources:
 
-* create(resource json)
+* create(resource::jsonb)
 * read(resource_type, logical_id)
-* update(resource json)
+* update(resource::jsonb)
 * vread(resource_type, version_id)
 * delete(resource_type, logical_id)
 * history(resource_type, logical_id)
@@ -200,54 +216,87 @@ The first group of functions implements CRUD operations on resources:
 * is_deleted(resource_type, logical_id)
 
 
+Let's create first Patient with `fhir.create`;
 ```sql
 SELECT fhir.create('{"resourceType":"Patient", "name": [{"given": ["John"]}]}')
 ```
+When resource is created, `logical_id` and `version_id` are generated as uuids.
 
+
+Let's check, if Patient was created:
 ```sql
-SELECT resource_type, logical_id, version_id,*
+SELECT resource_type, logical_id, version_id, content
  FROM patient
 ORDER BY updated DESC
 LIMIT 2
 ```
 
+Now you can select last created patient's `logical_id` and copy it for
+all forthcoming requests:
+
+```sql
+(SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1)
+```
+
+Or you can use it in request directly. Let's select last patient with `fhir.read`:
 
 ```sql
 SELECT fhir.read('Patient',
- (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1)
+  (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1)
 );
 ```
 
+And rename it with `fhir.update`:
 ```sql
 SELECT fhir.update(
    jsonbext.merge(
      fhir.read('Patient',
-       (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1) -- or copy/paste logical_id
+       (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1)
      ),
      '{"name":[{"given":"Bruno"}]}'
    )
 );
--- returns update version
+-- returns updated version
+--
+-- Did you noticed that patient named Bruno now?
+-- Forget to mention, that you can edit any text inside of this code block.
+-- Try to rename {"given":"Bruno"} to any name you want and run code multiple times
 ```
+
+Repeat last update several times, but change given name every time. 
+Check how `patient_history` table grows.
+Execute next query after every update and pay attention to `versions_count` 
+number:
 
 ```sql
 SELECT
  (SELECT count(*) FROM patient LIMIT 1) as patients_count,
- (SELECT count(*) FROM patient LIMIT 1) as versions_count
+ (SELECT count(*) FROM patient_history LIMIT 1) as versions_count
 ```
 
-```sql
--- read previous version of resource
-SELECT fhir.vread('Patient', 
-  /*old_version_id*/ (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1)
-);
-```
+On each update resource content is updated in the `patient` table, 
+and old version of the resource is copied into the `patient_history` table.
 
+`fhir.history` will show all previous versions for any resource:
 
 ```sql
 SELECT fhir.history('Patient', (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1));
 ```
 
+But returned `Bundle` resource may be too excess. So you can select any version
+of `Patient` resource with `fhir.vread`. Let's select one step before current
+version:
+
+```sql
+-- read previous version of resource
+SELECT fhir.vread('Patient', 
+  (SELECT version_id FROM patient_history ORDER BY updated DESC LIMIT 1)
+);
+```
+
+Now let's delete Patient. That deletion will take place in patient's history.
+But let's use `is_exists` and `is_deleted` before any delete action.
+
 ```sql
 SELECT fhir.is_exists('Patient', (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1));
 -- should return true
@@ -258,23 +307,27 @@ SELECT fhir.is_deleted('Patient', (SELECT logical_id FROM patient ORDER BY updat
 -- should return false
 ```
 
+Time to delete the Patient, but pay attention to the fact, that we'll
+need last patient's `logical_id` for the final **is_exists** and **is_deleted**
+checks. `fhir.delete` will return that `logical_id` and you need to copy and paste it
+further.
+
+Now go to the deletion:
 ```sql
 SELECT fhir.delete('Patient', (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1));
--- returns last version
+-- should return last version
+-- don't forget to copy "versionId" value.
 ```
 
 ```sql
-SELECT fhir.is_exists('Patient', (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1));
+SELECT fhir.is_exists('Patient', 'replace-this-to-copied-logical-id');
 -- should return false
 ```
 
 ```sql
-SELECT fhir.is_deleted('Patient', (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1));
+SELECT fhir.is_deleted('Patient', 'replace-this-to-copied-logical-id');
 -- should return true
 ```
-When resource is created, *logical_id* and *version_id* are generated as uuids.
-On each update resource content is updated in the *patient* table, and old version of the resource is copied
-into the *patient_history* table.
 
 ## Transaction
 
