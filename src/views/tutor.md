@@ -206,15 +206,14 @@ WHERE logical_id = 'Patient'
 Functions representing public API of FHIRbase are all located in the `fhir` schema.
 The first group of functions implements CRUD operations on resources:
 
-* create(resource::jsonb)
-* read(resource_type, logical_id)
-* update(resource::jsonb)
-* vread(resource_type, version_id)
-* delete(resource_type, logical_id)
-* history(resource_type, logical_id)
-* is_exists(resource_type, logical_id)
-* is_deleted(resource_type, logical_id)
-
+* `fhir.create(resource::jsonb)`
+* `fhir.read(resource_type, logical_id)`
+* `fhir.update(resource::jsonb)`
+* `fhir.vread(resource_type, version_id)`
+* `fhir.delete(resource_type, logical_id)`
+* `fhir.history(resource_type, logical_id)`
+* `fhir.is_exists(resource_type, logical_id)`
+* `fhir.is_deleted(resource_type, logical_id)`
 
 Let's create first Patient with `fhir.create`;
 ```sql
@@ -329,18 +328,15 @@ SELECT fhir.is_deleted('Patient', 'replace-this-to-copied-logical-id');
 -- should return true
 ```
 
-## Transaction
-
-
 ## Search & Indexing
 
 Next part of API is a search API.
 Folowing functions will help you to search resources in FHIRbase:
 
-* fhir.search(resourceType, searchString) returns a bundle
-* fhir._search(resourceType, searchString) returns a relation
-* fhir.explain_search(resourceType, searchString) shows an execution plan for search
-* fhir.search_sql(resourceType, searchString) shows the original sql query underlying the search
+* `fhir.search(resourceType, searchString)` - returns a bundle
+* `fhir._search(resourceType, searchString)` - returns a relation
+* `fhir.explain_search(resourceType, searchString)` - shows an execution plan for search
+* `fhir.search_sql(resourceType, searchString)` - shows the original sql query underlying the search
 
 ```sql
 
@@ -351,7 +347,7 @@ select fhir.search('Patient', 'given=john')
 
 ```sql
 select * from fhir._search('Patient', 'name=david&count=10');
--- returns search as relatio
+-- returns search as relation
 
 -- version_id | logical_id     | resource_type
 ------------+----------------------------------
@@ -448,9 +444,31 @@ select fhir.explain_search('Patient', 'name=david&count=10');
 -- Execution time: 6.946 ms
 ```
 
-### Performance Tests
+## Transaction
 
-### Road Map
+FIXME: you can create multiple patients in one transaction
+```sql
+SELECT fhir.transaction($$ 
+{
+"resourceType":"Bundle",
+"type":"transaction",
+"entry": [
+  {
+    "transaction":{"method":"POST", "url":"/Patient"},
+    "resource":{"resourceType":"Patient", "name":[{"given": ["John"]}]}
+  },
+  {
+    "transaction":{"method":"POST", "url":"/Patient"},
+    "resource":{"resourceType":"Patient", "name":[{"given": ["Pete"]}]}
+  }]
+} 
+$$)
+```
 
-
-
+Let's check, if Patient was created:
+```sql
+SELECT resource_type, logical_id, version_id, content
+FROM patient
+ORDER BY updated DESC
+LIMIT 10
+```
