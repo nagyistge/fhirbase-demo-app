@@ -44,7 +44,7 @@
 
 <div class="result" ng-class="{open: showResult}">
   <h3 class="result-header"  ng-click="showResult =! showResult">
-    result
+    result<span ng-if="queryTiming">: {{queryTiming}} ms</span>
     <span ng-class="{'glyphicon-chevron-up': !showResult, 'glyphicon-chevron-down': showResult}" class="glyphicon icon-collapse"></span>
   </h3>
   <div class="result-content">

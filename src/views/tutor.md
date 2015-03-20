@@ -1,13 +1,26 @@
-# FHIRBase Introduction
+# Interactive Tutorial
 
-We assume that you have successfully
-[installed FHIRBase](http://fhirbase.github.io/installation.html)
- and already configured connection parameters in your
-PostgreSQL client.  Or you able to follow this tutorial in more
-convinient way and run any code right on this page, cause it is interactive.
+We'll cover most important parts of FHIRbase in this tutorial.
+
+Firstly, must to say, that this tutorial is interactive. That means 
+you can run any code right on this page and get feedback immediately.
 Every time you see `Run` button, you can press it and the results of real
 PostgreSQL query will be shown in the bottom part of a page, inside of "result"
 popup block.
+
+Let's try it now:
+
+```sql
+SELECT 'Run me, please';
+```
+
+But you can always [install FHIRbase](http://fhirbase.github.io/installation.html) 
+locally and repeat same steps on your own machine. Just follow 
+[installation guide](http://fhirbase.github.io/installation.html).
+
+Great, keep going further.
+
+# FHIRBase Introduction
 
 FHIRBase is a PostgreSQL extension for storing and retrieving
 [FHIR resources](http://www.hl7.org/implement/standards/fhir/resources.html). You
@@ -328,7 +341,81 @@ SELECT fhir.is_deleted('Patient', 'replace-this-to-copied-logical-id');
 -- should return true
 ```
 
-## Search & Indexing
+## Transaction
+
+For sure you've already thought about creating multiple patients with one
+query. Or even about multiple different CRUD operations at the same time, like
+`fhir.create`, `fhir.update`, `fhir.delete` and so on. Good news - FHIRbase has
+solution for this, and it's called `fhir.transaction`.
+
+Let's try it and create 10 patients with one transaction. But transaction JSON
+would become very long and hard to read without indent formatting. PostgreSQL
+will not let to pass multiline string easy way.  So we'll use PostgreSQL 
+[Dollar-Quoted String Constants](http://www.postgresql.org/docs/8.2/static/sql-syntax-lexical.html#SQL-SYNTAX-DOLLAR-QUOTING) 
+and wrap long multiline JSON inside of paired `$$` tags. Short representation
+of this idea: `fhir.transaction($$ HUGE_JSON $$)`.
+
+Ok, run transaction now:
+
+```sql
+SELECT fhir.transaction($$ 
+{
+"resourceType":"Bundle",
+"type":"transaction",
+"entry": [
+  {
+    "transaction":{"method":"POST", "url":"/Patient"},
+    "resource":{"resourceType":"Patient", "name":[{"given": ["Mark"]}]}
+  },
+  {
+    "transaction":{"method":"POST", "url":"/Patient"},
+    "resource":{"resourceType":"Patient", "name":[{"given": ["Boris"]}]}
+  },
+  {
+    "transaction":{"method":"POST", "url":"/Patient"},
+    "resource":{"resourceType":"Patient", "name":[{"given": ["Ted"]}]}
+  },
+  {
+    "transaction":{"method":"POST", "url":"/Patient"},
+    "resource":{"resourceType":"Patient", "name":[{"given": ["Mike"]}]}
+  },
+  {
+    "transaction":{"method":"POST", "url":"/Patient"},
+    "resource":{"resourceType":"Patient", "name":[{"given": ["Nick"]}]}
+  },
+  {
+    "transaction":{"method":"POST", "url":"/Patient"},
+    "resource":{"resourceType":"Patient", "name":[{"given": ["Chance"]}]}
+  },
+  {
+    "transaction":{"method":"POST", "url":"/Patient"},
+    "resource":{"resourceType":"Patient", "name":[{"given": ["Mary"]}]}
+  },
+  {
+    "transaction":{"method":"POST", "url":"/Patient"},
+    "resource":{"resourceType":"Patient", "name":[{"given": ["Cobe"]}]}
+  },
+  {
+    "transaction":{"method":"POST", "url":"/Patient"},
+    "resource":{"resourceType":"Patient", "name":[{"given": ["Paul"]}]}
+  },
+  {
+    "transaction":{"method":"POST", "url":"/Patient"},
+    "resource":{"resourceType":"Patient", "name":[{"given": ["Daniel"]}]}
+  }]
+} 
+$$)
+```
+
+Let's check, if patients was created:
+```sql
+SELECT resource_type, logical_id, version_id, content
+FROM patient
+ORDER BY updated DESC
+LIMIT 10
+```
+
+## Search
 
 Next part of API is a search API.
 Folowing functions will help you to search resources in FHIRbase:
@@ -338,27 +425,33 @@ Folowing functions will help you to search resources in FHIRbase:
 * `fhir.explain_search(resourceType, searchString)` - shows an execution plan for search
 * `fhir.search_sql(resourceType, searchString)` - shows the original sql query underlying the search
 
-```sql
+You can repeat patient creation with `fhir.transaction` multiple times, to
+populate FHIRbase data a little.
 
-select fhir.search('Patient', 'given=john')
+Now let's make a search:
+
+```sql
+select fhir.search('Patient', 'given=mark')
 -- returns bundle
--- {"type": "search", "entry": [...]}
 ```
 
+`Bundle` JSON can be not very convinient form for result and you may want to see
+every patient in a single row, that's why `fhir._search` is needed.
+
+Let's search and get one patient per row:
+
 ```sql
-select * from fhir._search('Patient', 'name=david&count=10');
+select * from fhir._search('Patient', 'name=mark&count=10');
 -- returns search as relation
-
--- version_id | logical_id     | resource_type
-------------+----------------------------------
---            | "a8bec52c-..." | Patient
---            | "fad90884-..." | Patient
---            | "895fdb15-..." | Patient
+-- pay attention to logical_id fields, they must be different
 ```
 
+Behind the scenes FHIRbase builds very smart and complex search SQL query. In 
+some point you may need to debug it, or understand what indexes to set and
+where. `fhir.search_sql` will decode query for you. Let's try:
+
 ```sql
--- expect generated by search sql
-select fhir.search_sql('Patient', 'given=david&count=10');
+select fhir.search_sql('Patient', 'given=mark&count=10');
 
 -- SELECT * FROM patient
 -- WHERE (index_fns.index_as_string(patient.content, '{given}') ilike '%david%')
@@ -366,28 +459,37 @@ select fhir.search_sql('Patient', 'given=david&count=10');
 -- OFFSET 0
 ```
 
+Now copy `search_sql` from result, run it separately and compare to previous
+`fhir._search` results:
+
+```sql
+SELECT patient.version_id, patient.logical_id, patient.resource_type,
+patient.updated, patient.published, patient.category, patient.content FROM
+patient WHERE (index_fns.index_as_string(patient.content, '{name,given}') ilike
+'%mark%') LIMIT 100 OFFSET 0
+-- Look, it completely identical to 
+-- select * from fhir._search('Patient', 'name=mark&count=10');
+```
+
+And execution plan can be seen with `fhir.explain_search`. Try it:
+
 ```sql
 -- explain query execution plan
-select fhir.explain_search('Patient', 'given=david&count=10');
-
--- Limit  (cost=0.00..19719.37 rows=100 width=461) (actual time=6.012..7198.325 rows=100 loops=1)
---   ->  Seq Scan on patient  (cost=0.00..81441.00 rows=413 width=461) (actual time=6.010..7198.290 rows=100 loops=1)
---         Filter: (index_fns.index_as_string(content, '{name,given}'::text[]) ~~* '%david%'::text)
---         Rows Removed by Filter: 139409
--- Planning time: 0.311 ms
--- Execution time: 7198.355 ms
+select fhir.explain_search('Patient', 'given=mark&count=10');
 ```
+
+## Indexing
 
 Search works without indexing but search query would be slow
 on any reasonable amount of data.
 So FHIRbase has a group of indexing functions:
 
-* index_search_param(resourceType, searchParam)
-* drop_index_search_param(resourceType, searchParam)
-* index_resource(resourceType)
-* drop_resource_indexes(resourceType)
-* index_all_resources()
-* drop_all_resource_indexes()
+* `index_search_param(resourceType, searchParam)`
+* `drop_index_search_param(resourceType, searchParam)`
+* `index_resource(resourceType)`
+* `drop_resource_indexes(resourceType)`
+* `index_all_resources()`
+* `drop_all_resource_indexes()`
 
 Indexes are not for free - they eat space and slow inserts and updates.
 That is why indexes are optional and completely under you control in FHIRbase.
@@ -395,21 +497,20 @@ That is why indexes are optional and completely under you control in FHIRbase.
 Most important function is `fhir.index_search_param` which
 accepts resourceType as a first parameter, and name of search parameter to index.
 
-```sql
-select count(*) from patient;
--- returns total number of patients
-```
+Let's check request timing for search without index you have already ran before. 
+You can see execution time in the header of result popup, near **result** word. 
+Make search request multiple times and remember average execution time value:
 
 ```sql
 -- search without index
-select fhir.search('Patient', 'given=david&count=10');
--- Time: 7332.451 ms
+select fhir.search('Patient', 'given=mark&count=10');
 ```
+
+Next add index for `Patient` names with `fhir.index_search_param`:
 
 ```sql
 -- index search param
 SELECT fhir.index_search_param('Patient','name');
---- Time: 15669.056 ms
 ```
 
 ```sql
@@ -444,31 +545,3 @@ select fhir.explain_search('Patient', 'name=david&count=10');
 -- Execution time: 6.946 ms
 ```
 
-## Transaction
-
-FIXME: you can create multiple patients in one transaction
-```sql
-SELECT fhir.transaction($$ 
-{
-"resourceType":"Bundle",
-"type":"transaction",
-"entry": [
-  {
-    "transaction":{"method":"POST", "url":"/Patient"},
-    "resource":{"resourceType":"Patient", "name":[{"given": ["John"]}]}
-  },
-  {
-    "transaction":{"method":"POST", "url":"/Patient"},
-    "resource":{"resourceType":"Patient", "name":[{"given": ["Pete"]}]}
-  }]
-} 
-$$)
-```
-
-Let's check, if Patient was created:
-```sql
-SELECT resource_type, logical_id, version_id, content
-FROM patient
-ORDER BY updated DESC
-LIMIT 10
-```

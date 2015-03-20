@@ -70,11 +70,13 @@ app.run ($rootScope, $window, $location, $http)->
     hintOptions:
       tables: tables
   query = (sql)->
+    $rootScope.queryStart = new Date().getTime()
     $http(
       url: baseUrl,
       method: 'GET',
       params: {sql: sql}
     ).success (data)->
+      $rootScope.queryTiming = new Date().getTime() - $rootScope.queryStart
       $rootScope.queryResultIsEmpty = data.length < 1 ? true : false
       $rootScope.showResult = true
       $rootScope.result = data
