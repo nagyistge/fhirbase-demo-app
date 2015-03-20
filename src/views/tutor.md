@@ -494,8 +494,40 @@ So FHIRbase has a group of indexing functions:
 Indexes are not for free - they eat space and slow inserts and updates.
 That is why indexes are optional and completely under you control in FHIRbase.
 
-Most important function is `fhir.index_search_param` which
-accepts resourceType as a first parameter, and name of search parameter to index.
+Before indexing experiments, please keep in mind, that searching time boost can be
+observable only on thousands of entries. If you have enough patience, you can
+go back to **Transaction** block and try to generate those thousands of
+patients. After that you'll see the difference sharp and clear.  
+
+If you don't have that much patience - you'll get indexing functions
+understanding and practice anyway. 
+
+So, let's go. First, drop all existing indexes 
+for `Patient` resource with `drop_resource_indexes`:
+
+```sql
+SELECT fhir.drop_resource_indexes('Patient');
+```
+
+Check, if `Patient` names index exists. Next request should return empty
+result:
+
+```sql
+-- Patient names index size
+select * from (select obj->>'relname' as relname, obj->>'size' as size
+from jsonb_array_elements(fhir.admin_disk_usage_top(100)) as obj) x
+where relname = 'public.patient_name_name_string_idx'
+```
+
+Check, how many patients you have at the moment:
+
+```
+SELECT COUNT(*) from patient;
+```
+
+Now, follow up to indexing. Most important function for that is 
+`fhir.index_search_param` which accepts resourceType as a first parameter, and 
+name of search parameter to index.
 
 Let's check request timing for search without index you have already ran before. 
 You can see execution time in the header of result popup, near **result** word. 
@@ -503,45 +535,43 @@ Make search request multiple times and remember average execution time value:
 
 ```sql
 -- search without index
-select fhir.search('Patient', 'given=mark&count=10');
+SELECT fhir.search('Patient', 'given=mark&count=10');
 ```
 
-Next add index for `Patient` names with `fhir.index_search_param`:
+Next step - add index for `Patient` names with `fhir.index_search_param`:
 
 ```sql
 -- index search param
 SELECT fhir.index_search_param('Patient','name');
 ```
 
+Check, if index was created. Request should return the size of just created
+`Patient` names index:
+
 ```sql
--- index cost
-select fhir.admin_disk_usage_top(10);
--- [
---  {"size": "107 MB", "relname": "public.patient"},
---  {"size": "19 MB", "relname": "public.patient_name_name_string_idx"},
---  ...
--- ]
+-- Patient names index size
+select * from (select obj->>'relname' as relname, obj->>'size' as size
+from jsonb_array_elements(fhir.admin_disk_usage_top(100)) as obj) x
+where relname = 'public.patient_name_name_string_idx'
 ```
+
+Repeat patient search multiple times again and compare execution timing average
+value now. You'll see huge performance impact on large number of patients:
 
 ```sql
 -- search with index
-select fhir.search('Patient', 'name=david&count=10');
--- Time: 26.910 ms
+SELECT fhir.search('Patient', 'given=mark&count=10');
 ```
+
+For more understanding you can research request execution plan. This time you
+can see **Bitmap Index Scan** string in results.
 
 ```sql
 -- explain search
-
-select fhir.explain_search('Patient', 'name=david&count=10');
-
-------------------------------------------------------------------------------------------------------------------------------------------------
--- Limit  (cost=43.45..412.96 rows=100 width=461) (actual time=0.906..6.871 rows=100 loops=1)
---   ->  Bitmap Heap Scan on patient  (cost=43.45..1569.53 rows=413 width=461) (actual time=0.905..6.859 rows=100 loops=1)
---         Recheck Cond: (index_fns.index_as_string(content, '{name}'::text[]) ~~* '%david%'::text)
---         Heap Blocks: exact=100
---         ->  Bitmap Index Scan on patient_name_name_string_idx  (cost=0.00..43.35 rows=413 width=0) (actual time=0.205..0.205 rows=390 loops=1)
---               Index Cond: (index_fns.index_as_string(content, '{name}'::text[]) ~~* '%david%'::text)
--- Planning time: 0.449 ms
--- Execution time: 6.946 ms
+select fhir.explain_search('Patient', 'name=mark&count=10');
 ```
+
+Try to run `fhir.drop_resource_indexes` and 
+`fhir.index_search_param('Patient','name')` multiple times and check the result
+of `fhir.explain_search` every time.
 
