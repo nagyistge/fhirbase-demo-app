@@ -2,7 +2,7 @@
 
 We'll cover most important parts of FHIRbase in this tutorial.
 
-Firstly, must to say, that this tutorial is interactive. That means 
+First important point: this tutorial is interactive. That means 
 you can run any code right on this page and get feedback immediately.
 Every time you see `Run` button, you can press it and the results of real
 PostgreSQL query will be shown in the bottom part of a page, inside of "result"

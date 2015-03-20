@@ -1,7 +1,5 @@
 @import "../../bower_components/bootstrap/less/bootstrap.less";
 
-@redy: #e62b1e;
-
 @font-face {
   font-family: 'LogosFont';
   src: url('../fonts/LogosFont.ttf');
@@ -11,7 +9,6 @@
 
 body {
   font-family: 'Open Sans', sans-serif;
-  // padding-top: 55px;
   font-weight: 300;
   overflow-x: hidden;
 }
@@ -238,21 +235,25 @@ nav a{
   }
 }
 
-&.ng-enter,
-&.ng-leave {
-  -webkit-transition: 455ms cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
-  -moz-transition: 455ms cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
-  -ms-transition: 455ms cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
-  -o-transition: 455ms cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
-  transition: 1000ms cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
-  &.ng-leave-active {
-    display: none;
-  }
+.tutorial-content p {
+  font-size: 16px;
 }
 
-&.ng-enter {
-  opacity: 0.1;
-  position: relative;
-  &.ng-enter-active { opacity: 1; }
-}
+// &.ng-enter,
+// &.ng-leave {
+//   -webkit-transition: 455ms cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
+//   -moz-transition: 455ms cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
+//   -ms-transition: 455ms cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
+//   -o-transition: 455ms cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
+//   transition: 1000ms cubic-bezier(0.190, 1.000, 0.220, 1.000) all;
+//   &.ng-leave-active {
+//     display: none;
+//   }
+// }
+//
+// &.ng-enter {
+//   opacity: 0.1;
+//   position: relative;
+//   &.ng-enter-active { opacity: 1; }
+// }
 
