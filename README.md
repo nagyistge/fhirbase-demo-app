@@ -1,31 +1,22 @@
-fhirplace example plugin
-======================
+## Build into the fhirbase.github.io
+
+Assume, that you have [fhirbase.github.io](https://github.com/fhirbase/fhirbase.github.io)
+cloned locally and located on the same level, as fhirbase-demo-app repo
 
 ```sh
- # install nvm
- nvm use 0.10
-
- npm install
- npm start # to start dev server on localhost:8080
- npm run-script build # to build into dist directory
-
- `npm bin`/fhirbase # to publish
+env PORT=11111 BASEURL='http://pg2web.coreos.health-samurai.io:10001/' npm run-script build
+rm -rf ../fhirbase.github.io/demo/ && cp -R ./dist ../fhirbase.github.io/demo
+cd ../fhirbase.github.io && commit -am "Demo and Tutorial update" && git push && cd ../fhirbase-demo-app
 ```
-### Run with OAuth2
 
-Asume [lab-wall][] running on `http://localhost:3000` and
-application it self running on `http://localhost:8080`.
+## Run with CoreOS pg2web target
+```sh
+env PORT=11111 BASEURL='http://pg2web.coreos.health-samurai.io:10001/' npm run
+```
+
+## Run with CoreOS pg2web target
+Assume, that you have pg2web and fhirbase docker containers runnin locally.
 
 ```sh
-nvm use 0 \
-  && env \
-     PORT=8080 \
-     BASEURL='http://localhost:3000/fhir' \
-     OAUTH_CLIENT_ID='your-oauth-client-id' \
-     OAUTH_CLIENT_SECRET='your-oauth-client-secret' \
-     OAUTH_REDIRECT_URI='http://localhost:8080/#/redirect' \
-     OAUTH_SCOPE='all' \
-     OAUTH_RESPONSE_TYPE='token' \
-     OAUTH_AUTHORIZE_URI='http://localhost:3000/oauth/authorize' \
-     npm start
+env PORT=11111 BASEURL='http://192.168.59.103:8888/' npm start
 ```
