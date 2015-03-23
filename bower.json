@@ -4,6 +4,7 @@
   "dependencies": {
     "angular": "latest",
     "angular-animate": "latest",
+    "angular-scroll": "latest",
     "angular-cookies": "latest",
     "angular-route": "latest",
     "angular-sanitize": "latest",
