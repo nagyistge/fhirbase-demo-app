@@ -131,16 +131,6 @@ SELECT '{"foo": "i''m a string from JSON"}';
 -- should return true
 SELECT '{"foo": "bar"}'::jsonb @> '{"foo": "bar"}';
 ```
-# FHIRbase: FHIR persistence in PostgreSQL
-
-FHIR is a specification of semantic resources and API for working with healthcare data.
-Please address the [official specification](http://hl7-fhir.github.io/) for more details.
-
-To implement FHIR server we have to persist & query data in an application internal
-format or in FHIR format. This article describes how to store FHIR resources
-in a relational database (PostgreSQL), and open source FHIR
-storage implementation - [FHIRbase](https://github.com/fhirbase/fhirbase).
-
 
 ## Overview
 
