@@ -455,7 +455,7 @@ select fhir.search_sql('Patient', 'given=mark&count=10');
 
 -- SELECT * FROM patient
 -- WHERE (index_fns.index_as_string(patient.content, '{given}') ilike '%david%')
--- LIMIT 100
+-- LIMIT 10
 -- OFFSET 0
 ```
 
@@ -555,7 +555,7 @@ from jsonb_array_elements(fhir.admin_disk_usage_top(100)) as obj) x
 where relname = 'public.patient_name_name_string_idx'
 ```
 
-Repeat patient search multiple times again and compare execution timing average
+Repeat patient search multiple times again and compare average execution timing 
 value now. You'll see huge performance impact on large number of patients:
 
 ```sql
