@@ -45,27 +45,42 @@ nav a{
   font-size: 16px;
 }
 
-.sub-nav{
-  position: relative;
-}
+.tutorial-container {
+  padding: 40px 0px;
 
-ul.subnav-list{
-  position: fixed;
-  padding-top: 20px;
+  p, ul li {
+    font-size: 16px;
+  }
+  
+  .tutorial-content {
+    border-right: 1px solid #eee;
+    padding-right: 40px;
+  }
 
-  li{
-    padding: 0px 20px;
+  .sub-nav{
+    position: relative;
 
-    a:focus {
-      color: #337ab7;
-      text-decoration: none;
-    }
+    ul.subnav-list{
+      position: fixed;
+      padding-top: 20px;
 
-    &.active a {
-      font-weight: bold;
+      li{
+        padding: 0px 20px;
+
+        a:focus {
+          color: #337ab7;
+          text-decoration: none;
+        }
+
+        &.active a {
+          font-weight: bold;
+        }
+      }
     }
   }
 }
+
+
 
 .header {
   padding: 0 45px;
@@ -257,11 +272,6 @@ ul.subnav-list{
   }
 }
 
-.tutorial-content {
-  p, ul li {
-    font-size: 16px;
-  }
-}
 
 // &.ng-enter,
 // &.ng-leave {

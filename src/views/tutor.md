@@ -20,7 +20,7 @@ locally and repeat same steps on your own machine. Just follow
 
 Great, keep going further.
 
-# FHIRBase Introduction
+## FHIRBase Introduction
 
 FHIRBase is a PostgreSQL extension for storing and retrieving
 [FHIR resources](http://www.hl7.org/implement/standards/fhir/resources.html). You
@@ -36,7 +36,7 @@ we strongly advise to read some books or tutorials on the Web in the
 first place.
 
 
-## Stored Procedures as primary API
+## Functions as primary API
 
 In SQL world it's conventional to insert data with `INSERT` statement,
 delete it with `DELETE`, update with `UPDATE` and so on. FHIRBase uses
@@ -47,18 +47,19 @@ additional actions on data changes in order to keep FHIR-specific
 functionality (such as
 [search](http://www.hl7.org/implement/standards/fhir/search.html) and
 [versioning](http://www.hl7.org/implement/standards/fhir/http.html#vread))
-working.
+working. In PostgreSQL world Stored Procedures are called 
+[functions](http://www.postgresql.org/docs/9.4/static/xfunc-sql.html). So,
+hereinafter, we'll refer them as functions.
 
 There are some exceptions from this rule in data retrieval cases. For
 example you can `SELECT ... FROM resource` to search for specific
 resource or set of resources. But when you create, delete or modify
-something, you have to use corresponding stored procedures
-(hereinafter, we'll refer them as SP).
+something, you have to use corresponding function.
 
 ## Types
 
-SQL has strict type checking, so SP's arguments and return values are
-typed. When describing SP, we will put type of every argument after two
+SQL has strict type checking, so function arguments and return values are
+typed. When describing function, we will put type of every argument after two
 colon(`::`) characters. For example, if argument `cfg` has `jsonb` type, 
 we'll write:
 
@@ -86,9 +87,9 @@ several advantages of such decision:
 * If you need an XML representation of a resource, you can always get
   it from JSON in your application's code.
 
-## Passing JSON to a Stored Procedure
+## JSON parameter
 
-When SP's argument has type `jsonb`, that means you have to pass some
+When function argument has type `jsonb`, that means you have to pass some
 JSON as a value. To do this, you need to represent JSON as
 single-line PostgreSQL string. You can do this in many ways, for
 example, using a
@@ -132,7 +133,7 @@ SELECT '{"foo": "i''m a string from JSON"}';
 SELECT '{"foo": "bar"}'::jsonb @> '{"foo": "bar"}';
 ```
 
-## Overview
+## FHIRBase Overview
 
 **FHIRbase** is built on top of PostgreSQL and requires its version higher than 9.4
 (i.e. [jsonb](http://www.postgresql.org/docs/9.4/static/datatype-json.html) support).

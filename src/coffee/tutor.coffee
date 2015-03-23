@@ -23,14 +23,6 @@ app = require('./module')
 
 require('./views')
 
-# app.config ['$routeProvider', ($routeProvider) ->
-#   $routeProvider
-#     .when '/',
-#       template: require('../views/tutor.md')
-#     .otherwise
-#       templateUrl: '/views/404.html'
-# ]
-
 _nextId = 0
 nextId = ()->
   _nextId++
@@ -63,7 +55,7 @@ app.directive 'markdownTutor', ()->
     tutor =  require('../views/tutor.md')
     """
       <div class="row">
-        <div class="col-md-9">#{tutor}</div>
+        <div class="col-md-9 tutorial-content">#{tutor}</div>
         <div class="col-md-3 tutorial-nav sub-nav">
           <ul class="subnav-list list-unstyled" id="nav">
             <li ng-repeat="item in items" du-scrollspy="{{item.link.split('#')[1]}}">
