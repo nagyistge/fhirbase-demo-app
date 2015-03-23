@@ -1,4 +1,4 @@
-# Interactive Tutorial
+## Interactive Tutorial
 
 We'll cover most important parts of FHIRbase in this tutorial.
 

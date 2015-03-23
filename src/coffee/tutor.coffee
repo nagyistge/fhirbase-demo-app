@@ -61,14 +61,15 @@ app.directive 'markdownTutor', ()->
         link: '#' + angular.element(header).attr('id')})
   template: ()->
     tutor =  require('../views/tutor.md')
-    console.log tutor
     """
       <div class="row">
         <div class="col-md-9">#{tutor}</div>
         <div class="col-md-3 tutorial-nav sub-nav">
           <ul class="subnav-list list-unstyled" id="nav">
-            <li ng-repeat="item in items">
-              <a href="{{item.link}}" ng-click="goTo(item.link)" du-smooth-scroll du-scrollspy">{{item.title}}</a>
+            <li ng-repeat="item in items" du-scrollspy="{{item.link.split('#')[1]}}">
+              <a href="{{item.link}}" 
+                 ng-click="goTo(item.link)" 
+                 du-smooth-scroll">{{item.title}}</a>
             </li>
           </ul>
         </div>
@@ -88,11 +89,13 @@ app.run ($rootScope, $window, $document, $location, $timeout, $http)->
         $document.scrollToElementAnimated(el)
       , 300
 
+  $rootScope.goTo = (link)->
+    el =  angular.element(document.querySelector(link))
+    $location.url(link.split('#')[1])
+    $document.scrollToElementAnimated(el)
+
   $rootScope.steps =
     step1: 'SELECT 1'
-
-  $rootScope.goTo = (link)->
-    $location.url(link.split('#')[1])
 
   tables = []
   $rootScope.codemirrorOptions =

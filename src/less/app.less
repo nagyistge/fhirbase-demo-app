@@ -52,10 +52,19 @@ nav a{
 ul.subnav-list{
   position: fixed;
   padding-top: 20px;
-}
 
-ul.subnav-list li{
-       padding: 0px 20px;
+  li{
+    padding: 0px 20px;
+
+    a:focus {
+      color: #337ab7;
+      text-decoration: none;
+    }
+
+    &.active a {
+      font-weight: bold;
+    }
+  }
 }
 
 .header {
