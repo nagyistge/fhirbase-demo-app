@@ -152,8 +152,8 @@ as base StructureDefinitions which by themselves are resources in FHIR terms.
 
 FHIRbase stores each resource in two tables - one for current version
 and second for previous versions of the resource. Following a convention, tables are named
-in a lower case after resource types: `Patient => patient`,
-`StructureDefinition => structuredefinition`.
+in a lower case after resource types: `Patient` => `patient`,
+`StructureDefinition` => `structuredefinition`.
 
 For example **Patient** resources are stored
 in `patient` and `patient_history` tables:
