@@ -2,7 +2,7 @@
 
 We'll cover most important parts of FHIRbase in this tutorial.
 
-Important note: this tutorial is interactive. Thit means 
+Important note: this tutorial is interactive. This means 
 you can run any code right on the page and get a feedback immediately.
 Every time you see `Run` button, you can press it and the results of real
 PostgreSQL query will be displayed at the bottom of the page inside a "result"
@@ -14,9 +14,9 @@ Let's try it now:
 SELECT 'Run me, please';
 ```
 
-However, you can always [install FHIRbase](http://FHIRbase.github.io/installation.html) 
+However, you can always [install FHIRbase](http://fhirbase.github.io/installation.html) 
 locally and repeat the same steps on your own machine. Just follow the 
-[installation guide](http://FHIRbase.github.io/installation.html).
+[installation guide](http://fhirbase.github.io/installation.html).
 
 Great, keep going further.
 
@@ -32,7 +32,7 @@ are available.
 
 [SQL](https://en.wikipedia.org/wiki/SQL) is the language in which you
 "talk" to FHIRbase. If you don't have at least basic knowledge of SQL,
-we strongly recomment to read some books or tutorials on the Web in the
+we strongly recommend to read some books or tutorials on the Web in the
 first place.
 
 
