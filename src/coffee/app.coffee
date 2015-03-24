@@ -60,9 +60,18 @@ SELECT_TBLS = """
 """
 CREATE_SNIPS = """
  insert into snippets (sql, title) values
-    ('select * from snippets', 'show snippets'),
-    ('select * from alert', 'show alerts'),
-    ('select * from appointment', 'show appointments')
+    ('SELECT resource_type, logical_id, version_id, content from patient ORDER BY updated DESC limit 10;\n-- show last 10 patients', '1. show patients table'),
+    ('SELECT fhir.create(''{"resourceType":"Patient", "name": [{"given": ["John"]}]}'');\n-- create patient with given name ''John'' ', '2. create patient'),
+    ('SELECT fhir.read(''Patient'', (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1));\n-- show created patient', '3. read last created patient'),
+    ('SELECT fhir.update( jsonbext.merge( fhir.read(''Patient'', (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1) ), ''{"name":[{"given":"Bruno"}]}'' ) );\n-- returns updated patient version', '4. rename last created patient'),
+    ('SELECT fhir.history(''Patient'', (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1));\n-- returns history bundle', '5. show last patient history'),
+    ('SELECT fhir.vread(''Patient'', (SELECT version_id FROM patient_history ORDER BY updated DESC LIMIT 1));', '6. read previous patient version'),
+    ('SELECT fhir.is_exists(''Patient'', (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1));\n-- check, if patient still exists', '7. check, if patient still exists'),
+    ('SELECT fhir.is_deleted(''Patient'', (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1));\n-- check, if patient is deleted', '8. check, if patient is deleted'),
+    ('SELECT fhir.delete(''Patient'', (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1)); \n-- returns last patient version', '9. delete last patient'),
+    ('SELECT fhir.transaction($tr$ { "resourceType":"Bundle", "type":"transaction", "entry": [{"transaction":{"method":"POST", "url":"/Patient"}, "resource":{"resourceType":"Patient", "name":[{"given": ["Mark"]}]} }, { "transaction":{"method":"POST", "url":"/Patient"}, "resource":{"resourceType":"Patient", "name":[{"given": ["Boris"]}]} }, { "transaction":{"method":"POST", "url":"/Patient"}, "resource":{"resourceType":"Patient", "name":[{"given": ["Ted"]}]}}]} $tr$)', '10. create 3 patients in one transaction'),
+    ('SELECT fhir.search(''Patient'', ''given=john'')', '11. Search for patient'),
+    ('SELECT * from fhir._search(''Patient'', ''given=john&count=10'')', '12. Search as relations')
 """
 app.controller 'IndexController', ($scope, $http)->
   codemirrorExtraKeys = window.CodeMirror.normalizeKeyMap
@@ -85,6 +94,13 @@ app.controller 'IndexController', ($scope, $http)->
   # base_url = 'http://192.168.59.103:8888/'
   baseUrl = BASEURL || "#{window.location.protocol}//#{window.location.host}"
   $scope.sql = 'SELECT 1'
+
+  $scope.trigerState = (st)->
+    if $scope.rightPane == st
+      delete $scope.rightPane
+    else
+      $scope.rightPane = st
+
 
   query = (sql)->
     $http(
@@ -122,6 +138,8 @@ app.controller 'IndexController', ($scope, $http)->
     silentQuery("""SELECT * FROM snippets""")
     .success (data)->
       $scope.snippets = data
+      $scope.trigerState('snippets')
+      $scope.selectSnippet($scope.snippets[0])
     .error ()->
       silentQuery("create table if not exists snippets (sql text, title text)")
         .success ->
@@ -146,12 +164,6 @@ app.controller 'IndexController', ($scope, $http)->
       d = data.replace(/\n\n/g, "\n").split("<html>")[0]
       $scope.errorMessage = d
       console.log('error', data, arguments)
-
-  $scope.trigerState = (st)->
-    if $scope.rightPane == st
-      delete $scope.rightPane
-    else
-      $scope.rightPane = st
 
   $scope.selectSnippet = (item)->
     $scope.sql = item.sql
