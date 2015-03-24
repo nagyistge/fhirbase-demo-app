@@ -2,10 +2,10 @@
 
 We'll cover most important parts of FHIRbase in this tutorial.
 
-First important point: this tutorial is interactive. That means 
-you can run any code right on this page and get feedback immediately.
+Important note: this tutorial is interactive. Thit means 
+you can run any code right on the page and get a feedback immediately.
 Every time you see `Run` button, you can press it and the results of real
-PostgreSQL query will be shown in the bottom part of a page, inside of "result"
+PostgreSQL query will be displayed at the bottom of the page inside a "result"
 popup block.
 
 Let's try it now:
@@ -14,46 +14,46 @@ Let's try it now:
 SELECT 'Run me, please';
 ```
 
-But you can always [install FHIRbase](http://fhirbase.github.io/installation.html) 
-locally and repeat same steps on your own machine. Just follow 
-[installation guide](http://fhirbase.github.io/installation.html).
+However, you can always [install FHIRbase](http://FHIRbase.github.io/installation.html) 
+locally and repeat the same steps on your own machine. Just follow the 
+[installation guide](http://FHIRbase.github.io/installation.html).
 
 Great, keep going further.
 
-## FHIRBase Introduction
+## FHIRbase Introduction
 
-FHIRBase is a PostgreSQL extension for storing and retrieving
+FHIRbase is a PostgreSQL extension for storing and retrieving
 [FHIR resources](http://www.hl7.org/implement/standards/fhir/resources.html). You
-can interact with FHIRBase using any PostgreSQL client. We advise you
+can interact with FHIRbase using any PostgreSQL client. We advise you
 to start with [pgAdmin](http://www.pgadmin.org/), because it has
 easy-to-use graphical interface.  However, 
 [other options](https://wiki.postgresql.org/wiki/Community_Guide_to_PostgreSQL_GUI_Tools)
 are available.
 
 [SQL](https://en.wikipedia.org/wiki/SQL) is the language in which you
-"talk" to FHIRBase. If you don't have at least basic knowledge of SQL,
-we strongly advise to read some books or tutorials on the Web in the
+"talk" to FHIRbase. If you don't have at least basic knowledge of SQL,
+we strongly recomment to read some books or tutorials on the Web in the
 first place.
 
 
 ## Functions as primary API
 
-In SQL world it's conventional to insert data with `INSERT` statement,
-delete it with `DELETE`, update with `UPDATE` and so on. FHIRBase uses
+In SQL world, it's conventional to insert data with `INSERT` statement,
+delete it with `DELETE`, update with `UPDATE` and so on. FHIRbase uses
 less common approach - it forces you to use
 [stored procedures](http://en.wikipedia.org/wiki/Stored_procedure) for
-data manipulation. Reason for this is that FHIRBase needs to perform
+data manipulation. Reason for this is that FHIRbase needs to perform
 additional actions on data changes in order to keep FHIR-specific
 functionality (such as
 [search](http://www.hl7.org/implement/standards/fhir/search.html) and
 [versioning](http://www.hl7.org/implement/standards/fhir/http.html#vread))
-working. In PostgreSQL world Stored Procedures are called 
-[functions](http://www.postgresql.org/docs/9.4/static/xfunc-sql.html). So,
-hereinafter, we'll refer them as functions.
+working. In PostgreSQL world, stored procedures are called 
+[functions](http://www.postgresql.org/docs/9.4/static/xfunc-sql.html). 
+Hereinafter, we'll refer them as functions.
 
 There are some exceptions from this rule in data retrieval cases. For
-example you can `SELECT ... FROM resource` to search for specific
-resource or set of resources. But when you create, delete or modify
+example, you can `SELECT ... FROM resource` to search for specific
+resource or set of resources. However, when you create, delete or modify
 something, you have to use corresponding function.
 
 ## Types
@@ -65,7 +65,7 @@ we'll write:
 
 * cfg::jsonb - Confguration data
 
-You can take a look at
+You can look at the 
 [overview of standard PostgreSQL types](http://www.postgresql.org/docs/9.4/static/datatype.html#DATATYPE-TABLE).
 
 ## JSON and XML
@@ -77,7 +77,7 @@ interchangeable, what means any XML representation of FHIR resource
 can be unambiguously transformed into equivalent JSON
 representation.
 
-Considering interchangeability of XML and JSON FHIRBase team decided
+Considering interchangeability of XML and JSON FHIRbase team decided
 to discard XML format support and use JSON as only format. There are
 several advantages of such decision:
 
@@ -133,7 +133,7 @@ SELECT '{"foo": "i''m a string from JSON"}';
 SELECT '{"foo": "bar"}'::jsonb @> '{"foo": "bar"}';
 ```
 
-## FHIRBase Overview
+## FHIRbase Overview
 
 **FHIRbase** is built on top of PostgreSQL and requires its version higher than 9.4
 (i.e. [jsonb](http://www.postgresql.org/docs/9.4/static/datatype-json.html) support).
