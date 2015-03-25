@@ -5,7 +5,7 @@ We'll cover most important parts of FHIRbase in this tutorial.
 Important note: this tutorial is interactive. This means 
 you can run any code right on the page and get a feedback immediately.
 Every time you see `Run` button, you can press it and the results of real
-PostgreSQL query will be displayed at the bottom of the page inside a "result"
+PostgreSQL query will be displayed at the bottom of the page inside of a "result"
 popup block.
 
 Let's try it now:
