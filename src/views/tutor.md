@@ -71,8 +71,7 @@ You can look at the
 ## JSON and XML
 
 FHIR standard
-[allows](http://www.hl7.org/implement/standards/fhir/formats.html) to
-use two formats for data exchange: XML and JSON. They are
+[allows](http://www.hl7.org/implement/standards/fhir/formats.html) using two formats for data exchange: XML and JSON. They are
 interchangeable, what means any XML representation of FHIR resource
 can be unambiguously transformed into equivalent JSON
 representation.
@@ -89,10 +88,10 @@ several advantages of such decision:
 
 ## JSON parameter
 
-When function argument has type `jsonb`, that means you have to pass some
+When function argument has type `jsonb` that means you have to pass some
 JSON as a value. To do this, you need to represent JSON as
 single-line PostgreSQL string. You can do this in many ways, for
-example, using a
+example, using an
 [online JSON formatter](http://jsonviewer.stack.hu/). Copy-paste your
 JSON into this tool, click "Remove white space" button and copy-paste
 result back to editor.
@@ -104,13 +103,13 @@ escaping. Strings in PostgreSQL are enclosed in single quotes. Example:
 SELECT 'this is a string';
 ```
 
-If you have single quote in your string, you have to **double** it:
+If you have a single quote in your string, you have to **double** it:
 
 ```sql
-SELECT 'I''m a string with single quote!';
+SELECT 'I''m a string with a single quote!';
 ```
 
-So if your JSON contains single quotes, Find and Replace them with two
+Therefore, if your JSON contains single quotes, Find and Replace them with two
 single quotes in any text editor.
 
 Finally, get your JSON, surround it with single quotes, and append
@@ -121,7 +120,7 @@ SELECT '{"foo": "i''m a string from JSON"}'::jsonb;
 ```
 
 Sometimes you can omit `::jsonb` suffix and PostreSQL will parse it
-automaticly, if your JSON representation is valid:
+automatically if your JSON representation is valid:
 
 ```sql
 SELECT '{"foo": "i''m a string from JSON"}';
@@ -139,14 +138,14 @@ SELECT '{"foo": "bar"}'::jsonb @> '{"foo": "bar"}';
 (i.e. [jsonb](http://www.postgresql.org/docs/9.4/static/datatype-json.html) support).
 
 FHIR describes ~100 [resources](http://hl7-fhir.github.io/resourcelist.html)
-as base StructureDefinitions which by themselves are resources in FHIR terms.
+as base StructureDefinitions, which by themselves are resources in FHIR terms.
 
 FHIRbase stores each resource in two tables - one for current version
 and second for previous versions of the resource. Following a convention, tables are named
 in a lower case after resource types: `Patient` => `patient`,
 `StructureDefinition` => `structuredefinition`.
 
-For example **Patient** resources are stored
+For example, **Patient** resources are stored
 in `patient` and `patient_history` tables:
 
 ```sql
@@ -177,7 +176,7 @@ few tables for "meta" resources:
 
 These tables are populated with resources provided by FHIR distribution.
 
-Most of API for FHIRbase is represented as functions in `fhir` schema,
+Most of API for FHIRbase is represented as functions in `fhir` schema;
 other schemas are used as code library modules.
 
 First helpful function is `fhir.generate_tables(resources::text[])` which generates tables
@@ -226,7 +225,7 @@ SELECT fhir.create('{"resourceType":"Patient", "name": [{"given": ["John"]}]}')
 When resource is created, `logical_id` and `version_id` are generated as uuids.
 
 
-Let's check, if Patient was created:
+Let's check if Patient was created:
 ```sql
 SELECT resource_type, logical_id, version_id, content
  FROM patient
@@ -241,7 +240,7 @@ all forthcoming requests:
 (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1)
 ```
 
-Or you can use it in request directly. Let's select last patient with `fhir.read`:
+Alternatively, you can use it directly in a query. Let's select last patient with `fhir.read`:
 
 ```sql
 SELECT fhir.read('Patient',
@@ -249,7 +248,7 @@ SELECT fhir.read('Patient',
 );
 ```
 
-And rename it with `fhir.update`:
+Then rename it with `fhir.update`:
 ```sql
 SELECT fhir.update(
    jsonbext.merge(
@@ -266,7 +265,7 @@ SELECT fhir.update(
 -- Try to rename {"given":"Bruno"} to any name you want and run code multiple times
 ```
 
-Repeat last update several times, but change given name every time. 
+Repeat last update several times changing given name every time. 
 Check how `patient_history` table grows.
 Execute next query after every update and pay attention to `versions_count` 
 number:
@@ -277,16 +276,16 @@ SELECT
  (SELECT count(*) FROM patient_history LIMIT 1) as versions_count
 ```
 
-On each update resource content is updated in the `patient` table, 
+On each update, resource content is updated in the `patient` table, 
 and old version of the resource is copied into the `patient_history` table.
 
-`fhir.history` will show all previous versions for any resource:
+`fhir.history` will display all previous versions for any resource:
 
 ```sql
 SELECT fhir.history('Patient', (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1));
 ```
 
-But returned `Bundle` resource may be too excess. So you can select any version
+However, returned `Bundle` resource may be too excess. Therefore, you can select any version
 of `Patient` resource with `fhir.vread`. Let's select one step before current
 version:
 
@@ -298,7 +297,7 @@ SELECT fhir.vread('Patient',
 ```
 
 Now let's delete Patient. That deletion will take place in patient's history.
-But let's use `is_exists` and `is_deleted` before any delete action.
+Let's use `is_exists` and `is_deleted` before any delete action.
 
 ```sql
 SELECT fhir.is_exists('Patient', (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1));
@@ -310,7 +309,7 @@ SELECT fhir.is_deleted('Patient', (SELECT logical_id FROM patient ORDER BY updat
 -- should return false
 ```
 
-Time to delete the Patient, but pay attention to the fact, that we'll
+It is time to delete the Patient but pay attention to the fact that we will
 need last patient's `logical_id` for the final **is_exists** and **is_deleted**
 checks. `fhir.delete` will return that `logical_id` and you need to copy and paste it
 further.
@@ -334,14 +333,14 @@ SELECT fhir.is_deleted('Patient', 'replace-this-to-copied-logical-id');
 
 ## Transaction
 
-For sure you've already thought about creating multiple patients with one
-query. Or even about multiple different CRUD operations at the same time, like
+For sure, you've already thought about creating multiple patients with one
+query, or even about multiple different CRUD operations at the same time, like
 `fhir.create`, `fhir.update`, `fhir.delete` and so on. Good news - FHIRbase has
 solution for this, and it's called `fhir.transaction`.
 
-Let's try it and create 10 patients with one transaction. But transaction JSON
+Let's try it and create 10 patients with one transaction. However, transaction JSON
 would become very long and hard to read without indent formatting. PostgreSQL
-will not let to pass multiline string easy way.  So we'll use PostgreSQL 
+will not allow to pass multiline string easy way. So we'll use PostgreSQL 
 [Dollar-Quoted String Constants](http://www.postgresql.org/docs/8.2/static/sql-syntax-lexical.html#SQL-SYNTAX-DOLLAR-QUOTING) 
 and wrap long multiline JSON inside of paired `$$` tags. Short representation
 of this idea: `fhir.transaction($$ HUGE_JSON $$)`.
@@ -398,7 +397,7 @@ SELECT fhir.transaction($$
 $$)
 ```
 
-Let's check, if patients was created:
+Let's check if patients were created:
 ```sql
 SELECT resource_type, logical_id, version_id, content
 FROM patient
@@ -409,24 +408,24 @@ LIMIT 10
 ## Search
 
 Next part of API is a search API.
-Folowing functions will help you to search resources in FHIRbase:
+The following  functions will help you to search resources in FHIRbase:
 
 * `fhir.search(resourceType, searchString)` - returns a bundle
 * `fhir._search(resourceType, searchString)` - returns a relation
 * `fhir.explain_search(resourceType, searchString)` - shows an execution plan for search
 * `fhir.search_sql(resourceType, searchString)` - shows the original sql query underlying the search
 
-You can repeat patient creation with `fhir.transaction` multiple times, to
+You can repeat patient creation with `fhir.transaction` multiple times to
 populate FHIRbase data a little.
 
-Now let's make a search:
+Now let's execute a search:
 
 ```sql
 select fhir.search('Patient', 'given=mark')
 -- returns bundle
 ```
 
-`Bundle` JSON can be not very convinient form for result and you may want to see
+`Bundle` JSON can be not very convenient form for result and you may want to see
 every patient in a single row, that's why `fhir._search` is needed.
 
 Let's search and get one patient per row:
@@ -437,9 +436,9 @@ select * from fhir._search('Patient', 'name=mark&count=10');
 -- pay attention to logical_id fields, they must be different
 ```
 
-Behind the scenes FHIRbase builds very smart and complex search SQL query. In 
-some point you may need to debug it, or understand what indexes to set and
-where. `fhir.search_sql` will decode query for you. Let's try:
+Behind the scenes, FHIRbase builds very smart and complex search SQL query. At 
+some point you may need to debug it, or understand which indexes to set and
+where. `fhir.search_sql` will decode a query for you. Let's try:
 
 ```sql
 select fhir.search_sql('Patient', 'given=mark&count=10');
@@ -462,7 +461,7 @@ patient WHERE (index_fns.index_as_string(patient.content, '{name,given}') ilike
 -- select * from fhir._search('Patient', 'name=mark&count=10');
 ```
 
-And execution plan can be seen with `fhir.explain_search`. Try it:
+Moreover, execution plan can be seen with `fhir.explain_search`. Try it:
 
 ```sql
 -- explain query execution plan
@@ -473,7 +472,7 @@ select fhir.explain_search('Patient', 'given=mark&count=10');
 
 Search works without indexing but search query would be slow
 on any reasonable amount of data.
-So FHIRbase has a group of indexing functions:
+Therefore, FHIRbase has a group of indexing functions:
 
 * `index_search_param(resourceType, searchParam)`
 * `drop_index_search_param(resourceType, searchParam)`
@@ -482,25 +481,25 @@ So FHIRbase has a group of indexing functions:
 * `index_all_resources()`
 * `drop_all_resource_indexes()`
 
-Indexes are not for free - they eat space and slow inserts and updates.
+Indexes are not free - they eat space and slow inserts and updates.
 That is why indexes are optional and completely under you control in FHIRbase.
 
-Before indexing experiments, please keep in mind, that searching time boost can be
+Before indexing experiments, please keep in mind that searching time boost can be
 observable only on thousands of entries. If you have enough patience, you can
 go back to **Transaction** block and try to generate those thousands of
-patients. After that you'll see the difference sharp and clear.  
+patients. After that, you'll see the difference sharp and clear.  
 
 If you don't have that much patience - you'll get indexing functions
 understanding and practice anyway. 
 
-So, let's go. First, drop all existing indexes 
+Well, let's go. First, drop all existing indexes 
 for `Patient` resource with `drop_resource_indexes`:
 
 ```sql
 SELECT fhir.drop_resource_indexes('Patient');
 ```
 
-Check, if `Patient` names index exists. Next request should return empty
+Check if `Patient` names index exists. Next query should return empty
 result:
 
 ```sql
@@ -510,13 +509,13 @@ from jsonb_array_elements(fhir.admin_disk_usage_top(100)) as obj) x
 where relname = 'public.patient_name_name_string_idx'
 ```
 
-Check, how many patients you have at the moment:
+Check how many patients you have now:
 
 ```
 SELECT COUNT(*) from patient;
 ```
 
-Now, follow up to indexing. Most important function for that is 
+Then follow up to indexing. Most important function for that is 
 `fhir.index_search_param` which accepts resourceType as a first parameter, and 
 name of search parameter to index.
 
@@ -536,7 +535,7 @@ Next step - add index for `Patient` names with `fhir.index_search_param`:
 SELECT fhir.index_search_param('Patient','name');
 ```
 
-Check, if index was created. Request should return the size of just created
+Check if index was created. The query should return the size of just created
 `Patient` names index:
 
 ```sql
@@ -547,14 +546,14 @@ where relname = 'public.patient_name_name_string_idx'
 ```
 
 Repeat patient search multiple times again and compare average execution timing 
-value now. You'll see huge performance impact on large number of patients:
+value now. You'll see a huge performance impact on a large number of patients:
 
 ```sql
 -- search with index
 SELECT fhir.search('Patient', 'given=mark&count=10');
 ```
 
-For more understanding you can research request execution plan. This time you
+For more understanding, you can research query execution plan. This time you
 can see **Bitmap Index Scan** string in results.
 
 ```sql
