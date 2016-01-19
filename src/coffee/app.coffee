@@ -37,6 +37,8 @@ app.config ($routeProvider) ->
     templateUrl: '/views/404.html'
 
 app.run ($rootScope, $window, $location, $http)->
+  if window.location.protocol == 'https:'
+    window.location.protocol = 'http:'
 
 
 SELECT_PROCS = """
@@ -60,9 +62,18 @@ SELECT_TBLS = """
 """
 CREATE_SNIPS = """
  insert into snippets (sql, title) values
-    ('SELECT resource_type, logical_id, version_id, content from patient ORDER BY updated DESC limit 10;\n-- show last 10 patients', '1. show patients table'),
-    ('SELECT fhir.create(''{"resourceType":"Patient", "name": [{"given": ["John"]}]}'');\n-- create patient with given name ''John'' ', '2. create patient'),
-    ('SELECT fhir.read(''Patient'', (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1));\n-- show created patient', '3. read last created patient'),
+    ('SELECT fhir_create_storage(''{"resourceType": "Patient"}''::json);\n-- Create patients storage', '1. Create patients storage'),
+    ('SELECT fhir_create_resource(''{"resource": {"resourceType": "Patient", "name": [{"given": ["Smith"]}]}}'');\n-- Create patient', '2. Create patient'),
+    ('SELECT fhir_create_resource(''{"allowId": true, "resource": {"resourceType": "Patient", "id": "smith"}}'');\n-- Create patient with id', '3. Create patient with specific id'),
+    ('SELECT resource_type, id, version_id, resource from patient ORDER BY updated_at DESC limit 10;\n-- show last 10 patients', '4. Show patients table'),
+    ('SELECT fhir_read_resource(''{"resourceType": "Patient", "id": "smith"}'');\n-- Show patient by id using fhirbase API', '5. Show patient by id'),
+    
+    
+    
+    
+    
+    ('drop table snippets;', '0. Drop snippets table'),
+
     ('SELECT fhir.update( jsonbext.merge( fhir.read(''Patient'', (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1) ), ''{"name":[{"given":"Bruno"}]}'' ) );\n-- returns updated patient version', '4. rename last created patient'),
     ('SELECT fhir.history(''Patient'', (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1));\n-- returns history bundle', '5. show last patient history'),
     ('SELECT fhir.vread(''Patient'', (SELECT version_id FROM patient_history ORDER BY updated DESC LIMIT 1));', '6. read previous patient version'),

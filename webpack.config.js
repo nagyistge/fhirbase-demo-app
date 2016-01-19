@@ -25,6 +25,9 @@ module.exports = {
       { test: /views\/.*?\.html$/,   loader: "ng-cache?prefix=/views/" }
     ]
   },
+  devServer: {
+    headers: { "Access-Control-Allow-Origin": "http://127.0.0.1:8888" , "Access-Control-Allow-Credentials": "true"}
+  },
   plugins: [
     new etx("app.css", {}),
     new webpack.DefinePlugin({
