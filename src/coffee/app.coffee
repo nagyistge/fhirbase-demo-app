@@ -67,7 +67,14 @@ CREATE_SNIPS = """
     ('SELECT fhir_create_resource(''{"allowId": true, "resource": {"resourceType": "Patient", "id": "smith"}}'');\n-- Create patient with id', '3. Create patient with specific id'),
     ('SELECT resource_type, id, version_id, resource from patient ORDER BY updated_at DESC limit 10;\n-- show last 10 patients', '4. Show patients table'),
     ('SELECT fhir_read_resource(''{"resourceType": "Patient", "id": "smith"}'');\n-- Show patient by id using fhirbase API', '5. Show patient by id'),
-    
+    ('SELECT fhir_update_resource('{"resource": {"resourceType": "Patient", "id": "smith", "name": [{"given": ["John"], "family": ["Smith"]}]}}');\n-- Update patient by id', '6. Update patient by id'),
+    ('SELECT fhir_resource_history('{"resourceType": "Patient", "id": "smith"}');\n-- Show patient's history', '7. Show patient's history'),
+    ('SELECT fhir_search('{"resourceType": "Patient", "queryString": "name=smith"}');\n-- Patient search', '8. Patient search'),
+    ('SELECT fhir_search_sql('{"resourceType": "Patient", "queryString": "name=smith"}');\n-- See generated SQL', '9. See generated SQL'),
+    ('SELECT fhir_delete_resource('{"resourceType": "Patient", "id": "smith"}');\n --mark resource as deleted (i.e. keep history) ', '10. Delete resource'),
+    ('SELECT fhir_resource_history('{"resourceType": "Patient", "id": "smith"}');', '11. One more history'),
+    ('SELECT fhir_terminate_resource('{"resourceType": "Patient", "id": "smith"}');\n-- completely delete resource and its history', '12. Completely delete patient'),
+    ('SELECT fhir_resource_history('{"resourceType": "Patient", "id": "smith"}');', '13. And one more history time'),
     
     
     
