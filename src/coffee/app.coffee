@@ -129,14 +129,12 @@ CREATE_SNIPS = """
         DATE(resource->>''birthDate'') as birthdate
       FROM patient
     )
-  SELECT to_date(e.visit_date, ''YYYY-MM-DD'') as date, count(*) as visits
+  SELECT to_date(e.visit_date, ''YYYY-MM-DD'') as date, count(*) as visits, array_agg(p.id) as patient_ids
   FROM e
   JOIN p 
     on concat(''Patient/'', p.id) = e.patient
   GROUP BY date
-  ORDER BY visits desc;', '16. Show count of visits by date'),
-
-    ('drop table snippets;', '0. Drop snippets table')
+  ORDER BY visits desc;', '16. Show count of visits by date')
 
 """
 app.controller 'IndexController', ($scope, $http)->
