@@ -113,6 +113,28 @@ CREATE_SNIPS = """
     DATE(e.visit_date) >= (NOW()-(interval ''1 week''))
     AND p.birthdate <= DATE(''1966-01-01'') ;\n --Select patient older than 50 year and had encounter on last week
     ', '15. Select patient older than 50 year and had encounter on last week'),
+    ('
+  with 
+    e as (
+      SELECT 
+        resource#>>''{period,start}'' as visit_date,
+        resource#>>''{patient,reference}'' as patient
+      FROM encounter
+    ),
+    p as (
+      SELECT 
+        resource->>''id'' as id,
+        resource->''name'' as name,
+        age(DATE(resource->>''birthDate''))::text as age,
+        DATE(resource->>''birthDate'') as birthdate
+      FROM patient
+    )
+  SELECT to_date(e.visit_date, ''YYYY-MM-DD'') as date, count(*) as visits
+  FROM e
+  JOIN p 
+    on concat(''Patient/'', p.id) = e.patient
+  GROUP BY date
+  ORDER BY visits desc;', '16. Show count of visits by date'),
 
     ('drop table snippets;', '0. Drop snippets table')
 
