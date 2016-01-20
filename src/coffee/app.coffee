@@ -67,29 +67,55 @@ CREATE_SNIPS = """
     ('SELECT fhir_create_resource(''{"allowId": true, "resource": {"resourceType": "Patient", "id": "smith"}}'');\n-- Create patient with id', '3. Create patient with specific id'),
     ('SELECT resource_type, id, version_id, resource from patient ORDER BY updated_at DESC limit 10;\n-- show last 10 patients', '4. Show patients table'),
     ('SELECT fhir_read_resource(''{"resourceType": "Patient", "id": "smith"}'');\n-- Show patient by id using fhirbase API', '5. Show patient by id'),
-    ('SELECT fhir_update_resource('{"resource": {"resourceType": "Patient", "id": "smith", "name": [{"given": ["John"], "family": ["Smith"]}]}}');\n-- Update patient by id', '6. Update patient by id'),
-    ('SELECT fhir_resource_history('{"resourceType": "Patient", "id": "smith"}');\n-- Show patient's history', '7. Show patient's history'),
-    ('SELECT fhir_search('{"resourceType": "Patient", "queryString": "name=smith"}');\n-- Patient search', '8. Patient search'),
-    ('SELECT fhir_search_sql('{"resourceType": "Patient", "queryString": "name=smith"}');\n-- See generated SQL', '9. See generated SQL'),
-    ('SELECT fhir_delete_resource('{"resourceType": "Patient", "id": "smith"}');\n --mark resource as deleted (i.e. keep history) ', '10. Delete resource'),
-    ('SELECT fhir_resource_history('{"resourceType": "Patient", "id": "smith"}');', '11. One more history'),
-    ('SELECT fhir_terminate_resource('{"resourceType": "Patient", "id": "smith"}');\n-- completely delete resource and its history', '12. Completely delete patient'),
-    ('SELECT fhir_resource_history('{"resourceType": "Patient", "id": "smith"}');', '13. And one more history time'),
-    
-    
-    
-    
-    ('drop table snippets;', '0. Drop snippets table'),
+    ('SELECT fhir_update_resource(''{"resource": {"resourceType": "Patient", "id": "smith", "name": [{"given": ["John"], "family": ["Smith"]}]}}'');\n-- Update patient by id', '6. Update patient by id'),
+    ('SELECT fhir_resource_history(''{"resourceType": "Patient", "id": "smith"}'');\n-- Show patient''s history', '7. Show patient''s history'),
+    ('SELECT fhir_search(''{"resourceType": "Patient", "queryString": "name=smith"}'');\n-- Patient search', '8. Patient search'),
+    ('SELECT fhir_search_sql(''{"resourceType": "Patient", "queryString": "name=smith"}'');\n-- See generated SQL', '9. See generated SQL'),
+    ('SELECT fhir_delete_resource(''{"resourceType": "Patient", "id": "smith"}'');\n --mark resource as deleted (i.e. keep history) ', '10. Delete resource'),
+    ('SELECT fhir_resource_history(''{"resourceType": "Patient", "id": "smith"}'');', '11. One more history'),
+    ('SELECT fhir_terminate_resource(''{"resourceType": "Patient", "id": "smith"}'');\n-- completely delete resource and its history', '12. Completely delete patient'),
+    ('SELECT fhir_resource_history(''{"resourceType": "Patient", "id": "smith"}'');', '13. And one more history time'),
+    ('with t as (SELECT  json_array_elements(fhir_search(
+            ''{"resourceType": "Patient", 
+              "queryString": "birthdate=lt1966"}''
+      )::json->''entry'') as resource)
+      select 
+        resource->''resource''->''id'' as id, 
+        resource->''resource''->''name'' as name,
+        resource->''resource''->''birthDate'' as birthdate
+      from t;', '14. Select patients older than 50 years'),
 
-    ('SELECT fhir.update( jsonbext.merge( fhir.read(''Patient'', (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1) ), ''{"name":[{"given":"Bruno"}]}'' ) );\n-- returns updated patient version', '4. rename last created patient'),
-    ('SELECT fhir.history(''Patient'', (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1));\n-- returns history bundle', '5. show last patient history'),
-    ('SELECT fhir.vread(''Patient'', (SELECT version_id FROM patient_history ORDER BY updated DESC LIMIT 1));', '6. read previous patient version'),
-    ('SELECT fhir.is_exists(''Patient'', (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1));\n-- check, if patient still exists', '7. check, if patient still exists'),
-    ('SELECT fhir.is_deleted(''Patient'', (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1));\n-- check, if patient is deleted', '8. check, if patient is deleted'),
-    ('SELECT fhir.delete(''Patient'', (SELECT logical_id FROM patient ORDER BY updated DESC LIMIT 1)); \n-- returns last patient version', '9. delete last patient'),
-    ('SELECT fhir.transaction($tr$ { "resourceType":"Bundle", "type":"transaction", "entry": [{"transaction":{"method":"POST", "url":"/Patient"}, "resource":{"resourceType":"Patient", "name":[{"given": ["Mark"]}]} }, { "transaction":{"method":"POST", "url":"/Patient"}, "resource":{"resourceType":"Patient", "name":[{"given": ["Boris"]}]} }, { "transaction":{"method":"POST", "url":"/Patient"}, "resource":{"resourceType":"Patient", "name":[{"given": ["Ted"]}]}}]} $tr$)', '10. create 3 patients in one transaction'),
-    ('SELECT fhir.search(''Patient'', ''given=john'')', '11. Search for patient'),
-    ('SELECT * from fhir._search(''Patient'', ''given=john&count=10'')', '12. Search as relations')
+    ('
+  with 
+    e as (
+      SELECT 
+        resource#>>''{period,start}'' as visit_date,
+        resource#>>''{patient,reference}'' as patient
+      FROM encounter
+    ),
+    p as (
+      SELECT 
+        resource->>''id'' as id,
+        resource->''name'' as name,
+        age(DATE(resource->>''birthDate''))::text as age,
+        DATE(resource->>''birthDate'') as birthdate
+      FROM patient
+    )
+  SELECT 
+    p.id as patient, 
+    p.name as name, 
+    e.visit_date as visit_date,
+    p.age as age
+  FROM e
+  JOIN p 
+    on concat(''Patient/'', p.id) = e.patient
+  WHERE 
+    DATE(e.visit_date) >= (NOW()-(interval ''1 week''))
+    AND p.birthdate <= DATE(''1966-01-01'') ;\n --Select patient older than 50 year and had encounter on last week
+    ', '15. Select patient older than 50 year and had encounter on last week'),
+
+    ('drop table snippets;', '0. Drop snippets table')
+
 """
 app.controller 'IndexController', ($scope, $http)->
   codemirrorExtraKeys = window.CodeMirror.normalizeKeyMap
