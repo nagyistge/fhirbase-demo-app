@@ -134,7 +134,8 @@ CREATE_SNIPS = """
   JOIN p 
     on concat(''Patient/'', p.id) = e.patient
   GROUP BY date
-  ORDER BY visits desc;', '16. Show count of visits by date')
+  ORDER BY visits desc;', '16. Show count of visits by date'),
+  ('SELECT fhirbase_version();\n-- Show Fhirbase version', '17. Show Fhirbase version')
 
 """
 app.controller 'IndexController', ($scope, $http)->
