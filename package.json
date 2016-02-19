@@ -12,6 +12,7 @@
     "less-loader": "latest",
     "file-loader": "latest",
     "ng-cache-loader": "latest",
+    "slug": "latest",
     "style-loader": "latest",
     "markdown-loader":"latest",
     "webpack": "latest",

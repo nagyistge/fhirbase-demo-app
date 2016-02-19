@@ -21,6 +21,8 @@ require('file?name=index.html!../index.html')
 require('file?name=fhir.json!../fhir.json')
 require('../less/app.less')
 
+slug = require('slug')
+
 app = require('./module')
 
 require('./views')
@@ -33,13 +35,15 @@ app.config ($routeProvider) ->
     .when '/',
       templateUrl: '/views/index.html'
       controller: 'IndexController'
+    .when '/:snippet',
+      templateUrl: '/views/index.html'
+      controller: 'IndexController'
   rp.otherwise
     templateUrl: '/views/404.html'
 
 app.run ($rootScope, $window, $location, $http)->
   if window.location.protocol == 'https:'
     window.location.protocol = 'http:'
-
 
 SELECT_PROCS = """
 SELECT
@@ -138,7 +142,7 @@ CREATE_SNIPS = """
   ('SELECT fhirbase_version();\n-- Show Fhirbase version', '17. Show Fhirbase version')
 
 """
-app.controller 'IndexController', ($scope, $http)->
+app.controller 'IndexController', ($scope, $http, $location, $routeParams)->
   codemirrorExtraKeys = window.CodeMirror.normalizeKeyMap
     "Ctrl-Space": "autocomplete"
     "Ctrl-Enter": ()-> $scope.query()
@@ -165,7 +169,6 @@ app.controller 'IndexController', ($scope, $http)->
       delete $scope.rightPane
     else
       $scope.rightPane = st
-
 
   query = (sql)->
     $http(
@@ -203,8 +206,22 @@ app.controller 'IndexController', ($scope, $http)->
     silentQuery("""SELECT * FROM snippets""")
     .success (data)->
       $scope.snippets = data
+
+      $scope.snippets.map (snippet)->
+        snippet.slug = slug(snippet.title, lower: true)
+
       $scope.trigerState('snippets')
-      $scope.selectSnippet($scope.snippets[0])
+      # $scope.selectSnippet($scope.snippets[0])
+
+      $scope.$watch '$routeUpdate', ->
+        $scope.snippet = $scope.snippets
+          .filter((snippet)-> snippet.slug == $routeParams.snippet)[0]
+
+        if $scope.snippet
+          $scope.sql = $scope.snippet.sql
+
+        $scope.query()
+
     .error ()->
       silentQuery("create table if not exists snippets (sql text, title text)")
         .success ->
@@ -231,8 +248,7 @@ app.controller 'IndexController', ($scope, $http)->
       console.log('error', data, arguments)
 
   $scope.selectSnippet = (item)->
-    $scope.sql = item.sql
-    $scope.query()
+    $location.path('/' + slug(item.title, lower: true))
 
   $scope.selectProc = (item)->
     $scope.sql = "SELECT #{item.title}"
