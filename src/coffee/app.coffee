@@ -1,6 +1,5 @@
 window.CodeMirror = require('../../bower_components/codemirror/lib/codemirror.js')
 require('../../bower_components/angular/angular.js')
-require('../../bower_components/angular-route/angular-route.js')
 require('../../bower_components/angular-sanitize/angular-sanitize.js')
 require('../../bower_components/angular-animate/angular-animate.js')
 require('../../bower_components/angular-scroll/angular-scroll.js')
@@ -28,18 +27,6 @@ app = require('./module')
 require('./views')
 
 sitemap = require('./sitemap')
-
-
-app.config ($routeProvider) ->
-  rp = $routeProvider
-    .when '/',
-      templateUrl: '/views/index.html'
-      controller: 'IndexController'
-    .when '/:snippet',
-      templateUrl: '/views/index.html'
-      controller: 'IndexController'
-  rp.otherwise
-    templateUrl: '/views/404.html'
 
 app.run ($rootScope, $window, $location, $http)->
   if window.location.protocol == 'https:'
@@ -142,7 +129,7 @@ CREATE_SNIPS = """
   ('SELECT fhirbase_version();\n-- Show Fhirbase version', '17. Show Fhirbase version')
 
 """
-app.controller 'IndexController', ($scope, $http, $location, $routeParams)->
+app.controller 'IndexController', ($scope, $http)->
   codemirrorExtraKeys = window.CodeMirror.normalizeKeyMap
     "Ctrl-Space": "autocomplete"
     "Ctrl-Enter": ()-> $scope.query()
@@ -210,17 +197,19 @@ app.controller 'IndexController', ($scope, $http, $location, $routeParams)->
       $scope.snippets.map (snippet)->
         snippet.slug = slug(snippet.title, lower: true)
 
+      runCurrentSnippet = ->
+        if $scope.snippets && $scope.snippets.length > 0
+          $scope.snippet = $scope.snippets
+            .filter((snippet)-> "#/#{snippet.slug}" == location.hash)[0]
+
+          if $scope.snippet
+            $scope.sql = $scope.snippet.sql
+            $scope.query()
+
+      runCurrentSnippet()
+      window.onhashchange = runCurrentSnippet
+
       $scope.trigerState('snippets')
-      # $scope.selectSnippet($scope.snippets[0])
-
-      $scope.$watch '$routeUpdate', ->
-        $scope.snippet = $scope.snippets
-          .filter((snippet)-> snippet.slug == $routeParams.snippet)[0]
-
-        if $scope.snippet
-          $scope.sql = $scope.snippet.sql
-
-        $scope.query()
 
     .error ()->
       silentQuery("create table if not exists snippets (sql text, title text)")
@@ -248,7 +237,7 @@ app.controller 'IndexController', ($scope, $http, $location, $routeParams)->
       console.log('error', data, arguments)
 
   $scope.selectSnippet = (item)->
-    $location.path('/' + slug(item.title, lower: true))
+    window.location.hash = '/' + slug(item.title, lower: true)
 
   $scope.selectProc = (item)->
     $scope.sql = "SELECT #{item.title}"

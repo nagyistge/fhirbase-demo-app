@@ -3,6 +3,5 @@ module.exports = angular.module 'app', [
   'ngAnimate'
   'duScroll'
   'ngSanitize'
-  'ngRoute'
   'ui.codemirror'
 ]
