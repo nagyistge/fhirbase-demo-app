@@ -205,6 +205,8 @@ app.controller 'IndexController', ($scope, $http)->
           if $scope.snippet
             $scope.sql = $scope.snippet.sql
             $scope.query()
+          else
+            $scope.selectSnippet($scope.snippets[0])
 
       runCurrentSnippet()
       window.onhashchange = runCurrentSnippet
