@@ -126,7 +126,7 @@ CREATE_SNIPS = """
     on concat(''Patient/'', p.id) = e.patient
   GROUP BY date
   ORDER BY visits desc;', '16. Show count of visits by date'),
-  ('SELECT fhir_patch_resource(''{"resource": {"resourceType": "Patient", "id": "johndoe"}, "patch": {"op": "replace", "path": "/name/0/given/0", "value": "Jane"}}'');\n-- Patch patient by id', '17. Patch patient by id'),
+  ('SELECT fhir_patch_resource(''{"resource": {"resourceType": "Patient", "id": "johndoe"}, "patch": [{"op": "replace", "path": "/name/0/given/0", "value": "Jane"}]}'');\n-- Patch patient by id', '17. Patch patient by id'),
   ('SELECT fhirbase_version();\n-- Show Fhirbase version', '18. Show Fhirbase version')
 
 """
